@@ -690,6 +690,30 @@ button.chip:hover {
 .tb-btn.btn--primary {
   border-color: var(--accent);
 }
+.select.tb-lang {
+  width: auto;
+  max-width: 148px;
+  padding: 0 var(--s-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  background: var(--bg-2);
+  cursor: pointer;
+}
+html[dir="rtl"] .app {
+  direction: ltr;
+}
+html[dir="rtl"] .panel,
+html[dir="rtl"] .rail,
+html[dir="rtl"] .life-card,
+html[dir="rtl"] .dialog,
+html[dir="rtl"] .toast-root {
+  direction: rtl;
+}
+html[dir="rtl"] .bullets,
+html[dir="rtl"] .differential {
+  padding-left: 0;
+  padding-right: 1.1em;
+}
 
 /* Combobox */
 .combo {

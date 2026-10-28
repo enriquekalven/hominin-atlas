@@ -8,13 +8,13 @@ import { defineConfig, type Plugin } from 'vite';
  */
 const PROD_CSP = [
   "default-src 'self'",
-  "script-src 'self'",
+  "script-src 'self' https://www.googletagmanager.com",
   "style-src 'self'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com",
   "font-src 'self'",
-  "connect-src 'self'",
+  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
   "worker-src 'self' blob:",
-  "media-src 'self'",
+  "media-src 'self' data: blob:",
   "object-src 'none'",
   "base-uri 'none'",
   "form-action 'none'",

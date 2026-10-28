@@ -4,10 +4,11 @@
  * On small screens the panel is a bottom sheet with a handle (peek ⇄ open).
  */
 import type { AppState, Panel } from '../../app/store';
+import { uiText } from '../../i18n';
 import type { UICtx } from '../context';
 import { currentSpecies, watch } from '../context';
 import { button, createScope, h, type Scope } from '../dom';
-import { PANEL_ORDER, TAB_LABEL, pick } from '../labels';
+import { PANEL_ORDER, pick } from '../labels';
 import { stopIfDetached, stopSpeaking } from '../speech';
 import { renderPanelHeader } from './header';
 import { createOverviewTab } from './overview';
@@ -83,7 +84,6 @@ export function mountPanel(root: HTMLElement, ctx: UICtx, deps: PanelDeps): { ex
   root.replaceChildren(h('div', { class: 'panel__head' }, handle, header, tablist), body);
   setSheet(false);
 
-  // Handle: tap toggles; a vertical drag of more than 24px opens (up) or closes (down).
   let dragY: number | null = null;
   let dragged = false;
   handle.addEventListener('pointerdown', (e) => {
@@ -116,7 +116,6 @@ export function mountPanel(root: HTMLElement, ctx: UICtx, deps: PanelDeps): { ex
     scopes.set(p, scope);
     const pane = panes.get(p);
     if (!pane) return;
-    // Keep keyboard focus on the "same" control across re-renders (controls carry data-fk).
     const focused = document.activeElement instanceof HTMLElement && pane.contains(document.activeElement) ? document.activeElement : null;
     const fk = focused?.dataset.fk;
     pane.replaceChildren();
@@ -136,7 +135,7 @@ export function mountPanel(root: HTMLElement, ctx: UICtx, deps: PanelDeps): { ex
       const pane = panes.get(id);
       if (pane) pane.hidden = !on;
     }
-    stopSpeaking(); // the speaking button may now be hidden
+    stopSpeaking();
     renderActive();
   };
 
@@ -151,18 +150,19 @@ export function mountPanel(root: HTMLElement, ctx: UICtx, deps: PanelDeps): { ex
     if (n > 0) tab.appendChild(h('span', { class: 'count num', 'aria-label': `(${n})` }, String(n)));
   };
 
-  watch(store, (s) => `${s.speciesId}|${s.audience}`, () => {
+  watch(store, (s) => `${s.speciesId}|${s.audience}|${s.lang}`, () => {
     stopSpeaking();
     renderPanelHeader(header, ctx);
   });
-  watch(store, (s) => s.audience, (a) => {
-    for (const [p, tab] of tabs) tab.replaceChildren(h('span', { class: 'tab__label' }, pick(TAB_LABEL[p], a)));
+  watch(store, (s) => `${s.audience}|${s.lang}`, () => {
+    const { audience, lang } = store.get();
+    const t = uiText(lang);
+    for (const [p, tab] of tabs) tab.replaceChildren(h('span', { class: 'tab__label' }, pick(t.tabs[p], audience)));
     updateCount();
   });
   store.select((s) => `${s.speciesId}|${s.specimenId}`, updateCount);
   watch(store, (s) => s.panel, showTab);
   store.subscribe(() => renderActive());
-  // A lesion picked in the 3D view (hotspot) opens the injuries tab and reveals the sheet.
   store.select((s) => s.selectedLesionId, (id) => {
     if (!id) return;
     if (store.get().panel !== 'injuries') store.set({ panel: 'injuries' });

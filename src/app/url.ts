@@ -12,7 +12,7 @@ import {
   type RenderMode,
   type Store,
 } from './store';
-import type { Audience, Species, SpeciesId } from '../data/types';
+import { LANG_CODES, type Audience, type LangCode, type Species, type SpeciesId } from '../data/types';
 
 const PANELS: readonly Panel[] = ['overview', 'injuries', 'specimens', 'compare', 'tree', 'glossary'];
 const MODES: readonly RenderMode[] = ['fossil', 'bone', 'xray'];
@@ -28,6 +28,11 @@ export function parseUrlQuery(
   const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
   const byId = new Map<string, Species>(speciesList.map((s) => [s.id, s]));
   const out: Partial<AppState> = {};
+
+  const langRaw = params.get('lang')?.trim().toLowerCase();
+  if (langRaw && (LANG_CODES as readonly string[]).includes(langRaw)) {
+    out.lang = langRaw as LangCode;
+  }
 
   const spRaw = params.get('species');
   if (spRaw && byId.has(spRaw)) {
@@ -101,6 +106,7 @@ export function parseUrlQuery(
 export function serializeUrlQuery(state: AppState): string {
   const p = new URLSearchParams();
   p.set('species', state.speciesId);
+  if (state.lang !== DEFAULT_STATE.lang) p.set('lang', state.lang);
   if (state.audience !== DEFAULT_STATE.audience) p.set('audience', state.audience);
   if (state.specimenId) p.set('specimen', state.specimenId);
   if (state.panel !== DEFAULT_STATE.panel) p.set('panel', state.panel);

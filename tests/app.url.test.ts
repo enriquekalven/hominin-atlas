@@ -70,15 +70,18 @@ describe('URL deep-link parser and serializer (src/app/url.ts)', () => {
       framing: 'skull' as const,
       showFlesh: true,
       panel: 'specimens' as const,
+      lang: 'ar' as const,
     };
     const qs = serializeUrlQuery(custom);
     expect(qs).toContain('species=paranthropus-boisei');
+    expect(qs).toContain('lang=ar');
     expect(qs).toContain('audience=clinician');
     expect(qs).toContain('mode=xray');
     expect(qs).toContain('frame=skull');
     expect(qs).toContain('flesh=1');
     const back = parseUrlQuery(qs, SPECIES);
     expect(back).toMatchObject({
+      lang: 'ar',
       speciesId: 'paranthropus-boisei',
       audience: 'clinician',
       renderMode: 'xray',
@@ -86,5 +89,13 @@ describe('URL deep-link parser and serializer (src/app/url.ts)', () => {
       showFlesh: true,
       panel: 'specimens',
     });
+  });
+
+  it('parses Arabic, German, and Dutch ?lang= parameters and ignores unsupported language codes', () => {
+    expect(parseUrlQuery('?lang=ar', SPECIES).lang).toBe('ar');
+    expect(parseUrlQuery('?lang=de', SPECIES).lang).toBe('de');
+    expect(parseUrlQuery('?lang=nl', SPECIES).lang).toBe('nl');
+    expect(parseUrlQuery('?lang=YUE', SPECIES).lang).toBe('yue');
+    expect(parseUrlQuery('?lang=xx-invalid', SPECIES).lang).toBeUndefined();
   });
 });

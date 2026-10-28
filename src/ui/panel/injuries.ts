@@ -2,9 +2,10 @@
  * Injuries tab: lesions of the displayed specimen grouped by kind; selecting one sets
  * store.selectedLesionId and asks the viewer to frame it. Shows the detail view when selected.
  */
-import { LESION_KIND_LABEL, type Lesion, type Species, type Specimen } from '../../data/types';
+import { LESION_KIND_LABEL, type LangCode, type Lesion, type Species, type Specimen } from '../../data/types';
 import { boneName } from '../../anatomy/bones';
 import { getSpecimen } from '../../data';
+import { localizedLesion } from '../../i18n';
 import type { UICtx } from '../context';
 import { currentSpecies } from '../context';
 import { button, h } from '../dom';
@@ -54,7 +55,7 @@ function otherSpecimens(ctx: UICtx, sp: Species, shown: Specimen | undefined, ki
 export function createInjuriesTab(ctx: UICtx): TabView {
   followLesionSpecimen(ctx);
   return {
-    key: (s) => `${s.speciesId}|${s.specimenId}|${s.audience}|${s.selectedLesionId}`,
+    key: (s) => `${s.speciesId}|${s.specimenId}|${s.audience}|${s.selectedLesionId}|${s.lang}`,
     render(pane, scope) {
       const s = ctx.store.get();
       const kids = s.audience === 'kids';
@@ -112,7 +113,7 @@ export function createInjuriesTab(ctx: UICtx): TabView {
               'section',
               { class: 'lesion-group' },
               sectionTitle('h3', pick(LESION_KIND_LABEL[g.kind], s.audience), g.lesions.length),
-              h('ul', { class: 'lesion-list', role: 'list' }, g.lesions.map((l) => h('li', null, lesionItem(ctx, l, kids)))),
+              h('ul', { class: 'lesion-list', role: 'list' }, g.lesions.map((l) => h('li', null, lesionItem(ctx, l, kids, s.lang)))),
             ),
           );
         }
@@ -123,11 +124,12 @@ export function createInjuriesTab(ctx: UICtx): TabView {
   };
 }
 
-function lesionItem(ctx: UICtx, l: Lesion, kids: boolean): HTMLButtonElement {
+function lesionItem(ctx: UICtx, l: Lesion, kids: boolean, lang: LangCode): HTMLButtonElement {
   const bone = boneName(l.bone);
+  const loc = localizedLesion(l, lang);
   return button(
     [
-      h('span', { class: 'lesion-item__title' }, kids ? l.title.kids : l.title.clinician),
+      h('span', { class: 'lesion-item__title' }, kids ? loc.title.kids : loc.title.clinician),
       h('span', { class: 'lesion-item__bone' }, kids ? bone.kids : bone.clinician),
       evidenceBadge(l.evidence, kids ? 'kids' : 'clinician'),
     ],

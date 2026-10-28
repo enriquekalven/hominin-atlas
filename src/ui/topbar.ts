@@ -1,7 +1,8 @@
 /**
- * Top bar: wordmark (the page's only h1), tagline, species search, audience toggle and tools.
+ * Top bar: wordmark (the page's only h1), tagline, species search, audience toggle, language selector, and tools.
  */
-import type { Audience } from '../data/types';
+import { LANG_CODES, type Audience, type LangCode } from '../data/types';
+import { pickDual, SUPPORTED_LANGUAGES, uiText } from '../i18n';
 import type { UICtx } from './context';
 import { watch } from './context';
 import { button, h } from './dom';
@@ -16,11 +17,6 @@ export interface TopbarActions {
   openScan(): void;
 }
 
-const TAGLINE: Record<Audience, string> = {
-  kids: 'Meet our ancient relatives through their bones',
-  clinician: 'Comparative skeletal anatomy and paleopathology of the hominins',
-};
-
 /** Simple skull-and-axis mark drawn with CSS-friendly SVG (decorative). */
 function wordmarkGlyph(): HTMLElement {
   return h('span', { class: 'brand__glyph', 'aria-hidden': 'true' });
@@ -28,13 +24,9 @@ function wordmarkGlyph(): HTMLElement {
 
 export function mountTopbar(root: HTMLElement, ctx: UICtx, actions: TopbarActions): void {
   const { store } = ctx;
+  const brandName = h('h1', { class: 'brand__name' }, 'Hominin Atlas');
   const tagline = h('p', { class: 'brand__tagline' });
-  const brand = h(
-    'div',
-    { class: 'brand' },
-    wordmarkGlyph(),
-    h('div', { class: 'brand__text' }, h('h1', { class: 'brand__name' }, 'Hominin Atlas'), tagline),
-  );
+  const brand = h('div', { class: 'brand' }, wordmarkGlyph(), h('div', { class: 'brand__text' }, brandName, tagline));
 
   const audience = segmented<Audience>({
     label: 'Audience',
@@ -45,6 +37,19 @@ export function mountTopbar(root: HTMLElement, ctx: UICtx, actions: TopbarAction
     ],
     value: store.get().audience,
     onChange: (a) => store.set({ audience: a }),
+  });
+
+  const langSelect = h(
+    'select',
+    { class: 'select tb-lang', 'aria-label': 'Language' },
+    SUPPORTED_LANGUAGES.map((l) => h('option', { value: l.code }, l.label)),
+  );
+  langSelect.value = store.get().lang;
+  langSelect.addEventListener('change', () => {
+    const val = langSelect.value;
+    if ((LANG_CODES as readonly string[]).includes(val)) {
+      store.set({ lang: val as LangCode });
+    }
   });
 
   const lineup = toggleButton({
@@ -73,13 +78,13 @@ export function mountTopbar(root: HTMLElement, ctx: UICtx, actions: TopbarAction
     iconButton('book', 'Glossary', () => openTab(ctx, 'glossary'), { class: 'btn tb-btn' }),
     iconButton('upload', 'Load scan', () => actions.openScan(), { class: 'btn tb-btn' }),
     iconButton('link', 'Share', shareLink, { class: 'btn tb-btn', title: 'Copy link to current view' }),
+    langSelect,
   );
   const help = iconButton('help', 'Help', () => actions.openHelp(), {
     class: 'btn tb-btn tb-help',
     'aria-keyshortcuts': 'Shift+Slash',
   });
 
-  // Small screens: search collapses behind a toggle so the tool row keeps its hit targets.
   const search = h('div', { class: 'tb-search', id: 'tb-search' }, speciesCombobox(ctx));
   const searchToggle = button(icon('search'), {
     class: 'btn btn--icon tb-search-toggle',
@@ -105,19 +110,18 @@ export function mountTopbar(root: HTMLElement, ctx: UICtx, actions: TopbarAction
   });
   setSearch(false);
 
-  root.replaceChildren(
-    brand,
-    h('div', { class: 'tb-audience' }, audience.el),
-    searchToggle,
-    search,
-    tools,
-    help,
-  );
+  root.replaceChildren(brand, h('div', { class: 'tb-audience' }, audience.el), searchToggle, search, tools, help);
 
-  watch(store, (s) => s.audience, (a) => {
-    audience.update(a);
-    tagline.textContent = TAGLINE[a];
-    quiz.classList.toggle('btn--primary', a === 'kids');
+  watch(store, (s) => `${s.audience}|${s.lang}`, () => {
+    const s = store.get();
+    const t = uiText(s.lang);
+    audience.update(s.audience);
+    audience.relabel({ kids: t.audienceKids, clinician: t.audienceClinician });
+    langSelect.value = s.lang;
+    langSelect.setAttribute('aria-label', t.languageLabel);
+    brandName.textContent = t.atlasTitle;
+    tagline.textContent = pickDual(t.tagline, s.audience);
+    quiz.classList.toggle('btn--primary', s.audience === 'kids');
   });
   store.select((s) => s.lineup, (on) => lineup.update(on));
 }

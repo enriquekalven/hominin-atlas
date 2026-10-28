@@ -6,6 +6,7 @@
 import type { Store } from '../app/store';
 import type { EventBus } from '../app/events';
 import type { Species, SpeciesId } from '../data/types';
+import { applyDocumentLang, localizedSpecies, uiText } from '../i18n';
 import type { UICtx } from './context';
 import { watch } from './context';
 import { h } from './dom';
@@ -67,12 +68,25 @@ export function mountUI(deps: UIDeps): void {
   initDialogs(modalRoot ?? document.body);
   bindSpeechLifecycle();
 
-  // Audience drives CSS (type scale, hit targets) for the app and the out-of-#app layers.
   watch(store, (s) => s.audience, (a) => {
     app.setAttribute('data-audience', a);
     toastRoot?.setAttribute('data-audience', a);
     setDialogAudience(a);
     stopSpeaking();
+  });
+
+  const syncTitle = () => {
+    const s = store.get();
+    const sp = ctx.byId.get(s.speciesId);
+    if (!sp) return;
+    const loc = localizedSpecies(sp, s.lang);
+    document.title = `${loc.common.clinician} · ${uiText(s.lang).atlasTitle}`;
+  };
+
+  watch(store, (s) => s.lang, (lang) => {
+    applyDocumentLang(lang);
+    stopSpeaking();
+    syncTitle();
   });
 
   const scan = mountScanLoader(ctx, stage, overlay);
@@ -101,12 +115,9 @@ export function mountUI(deps: UIDeps): void {
   mountQuiz(ctx);
   mountShortcuts(ctx, openHelp);
 
-  // A species switch announces itself politely (rail, timeline, search and shortcuts all land here).
-  store.select((s) => s.speciesId, (id) => {
+  store.select((s) => s.speciesId, () => {
     stopSpeaking();
-    const sp = ctx.byId.get(id);
-    if (sp) document.title = `${sp.common.clinician} · Hominin Atlas`;
+    syncTitle();
   });
-  const first = ctx.byId.get(store.get().speciesId);
-  if (first) document.title = `${first.common.clinician} · Hominin Atlas`;
+  syncTitle();
 }

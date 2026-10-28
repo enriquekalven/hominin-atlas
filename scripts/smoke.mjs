@@ -228,8 +228,64 @@ try {
   assert(deepLinkCheck.renderMode === 'bone', `Deep link renderMode mismatch: ${deepLinkCheck.renderMode}`);
   assert(deepLinkCheck.framing === 'skull', `Deep link framing mismatch: ${deepLinkCheck.framing}`);
 
+  // 10. Verify Google Analytics 4 initialization (G-SV6BEEVQZX) and localhost beacon gating
+  const gaCheck = await page.evaluate(() => ({
+    measurementId: window.__homininAnalytics?.measurementId,
+    firebaseAppId: window.__homininAnalytics?.firebaseAppId,
+    networkEnabled: window.__homininAnalytics?.networkEnabled,
+    hasDataLayer: Array.isArray(window.dataLayer) && window.dataLayer.length >= 2,
+    gaDisabledOnLocalhost: window['ga-disable-G-SV6BEEVQZX'] === true,
+  }));
+  assert(gaCheck.measurementId === 'G-SV6BEEVQZX', `Expected GA4 stream G-SV6BEEVQZX, got ${gaCheck.measurementId}`);
+  assert(gaCheck.hasDataLayer, 'Expected window.dataLayer to be initialized with gtag config');
+  assert(gaCheck.gaDisabledOnLocalhost && !gaCheck.networkEnabled, 'Expected GA4 network beacons to be disabled on 127.0.0.1');
+
+  // 11. Verify Arabic (RTL), German, and Dutch localization + Chirp 3 HD studio MP3 read-aloud
+  for (const lang of ['ar', 'de', 'nl']) {
+    await page.evaluate((code) => {
+      window.__lastNarration = undefined;
+      window.__atlas.setState({
+        lang: code,
+        audience: 'kids',
+        panel: 'overview',
+        speciesId: 'homo-neanderthalensis',
+      });
+    }, lang);
+    await page.waitForTimeout(150);
+
+    const domCheck = await page.evaluate(() => ({
+      htmlLang: document.documentElement.lang,
+      htmlDir: document.documentElement.dir,
+      selectVal: document.querySelector('select.tb-lang')?.value,
+      hasSpeakBtn: Boolean(document.querySelector('#pane-overview .btn--speak')),
+    }));
+    assert(domCheck.htmlLang === lang, `Expected <html lang="${lang}">, got ${domCheck.htmlLang}`);
+    assert(domCheck.htmlDir === (lang === 'ar' ? 'rtl' : 'ltr'), `Unexpected dir for ${lang}: ${domCheck.htmlDir}`);
+    assert(domCheck.selectVal === lang, `Expected topbar language select=${lang}, got ${domCheck.selectVal}`);
+    assert(domCheck.hasSpeakBtn, `Expected Read Aloud button in overview pane for ${lang}`);
+
+    await page.click('#pane-overview .btn--speak');
+    await page.waitForFunction(
+      (expectedLang) => window.__lastNarration && window.__lastNarration.lang === expectedLang,
+      lang,
+      { timeout: 10000 },
+    );
+    const narration = await page.evaluate(() => window.__lastNarration);
+    assert(
+      narration.mode === 'chirp3-hd',
+      `Expected Chirp 3 HD studio MP3 playback for [${lang}], got mode=${narration.mode}`,
+    );
+    assert(
+      String(narration.audioSrc || '').includes(`/audio/${lang}/homo-neanderthalensis-kids.mp3`),
+      `Unexpected audioSrc for [${lang}]: ${narration.audioSrc}`,
+    );
+    // Toggle stop
+    await page.click('#pane-overview .btn--speak');
+    await page.waitForTimeout(80);
+  }
+
   assert(errors.length === 0, `Unexpected browser errors:\n${errors.join('\n')}`);
-  console.log('[smoke] PASS — all WebGL viewer, hotspot, comparison, family-tree, GPU lifelike shader, and deep-link checks succeeded with 0 errors.');
+  console.log('[smoke] PASS — all WebGL viewer, hotspot, comparison, family-tree, GPU lifelike shader, GA4, 12-language i18n, and Chirp 3 HD read-aloud checks succeeded with 0 errors.');
 } finally {
   if (browser) await browser.close();
   await server.close();

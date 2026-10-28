@@ -1,9 +1,10 @@
 /**
- * Lesion detail: kids summary with read-aloud, or the clinician block (morphology, differential,
- * modern analogue, functional impact, survival interval, timing, healing, debate, sources).
+ * Lesion detail: kids summary with Chirp 3 HD read-aloud, or the clinician block (localized summary,
+ * morphology, differential, modern analogue, functional impact, survival interval, timing, healing, debate, sources).
  */
 import { LESION_KIND_LABEL, type Audience, type Lesion } from '../../data/types';
 import { boneName } from '../../anatomy/bones';
+import { localizedLesion, uiText } from '../../i18n';
 import type { UICtx } from '../context';
 import { button, h, type Scope } from '../dom';
 import { icon } from '../icons';
@@ -48,12 +49,16 @@ export function renderLesionDetail(
   nav: LesionNav,
 ): HTMLElement {
   const kids = audience === 'kids';
+  const lang = ctx.store.get().lang;
+  const t = uiText(lang);
+  const loc = localizedLesion(l, lang);
   const bone = boneName(l.bone);
-  const title = pick(l.title, audience);
+  const title = pick(loc.title, audience);
+  const summaryText = pick(loc.summary, audience);
   const navBar = h(
     'div',
     { class: 'lesion__nav' },
-    button([icon('chevronLeft'), h('span', { class: 'btn__label' }, kids ? 'All injuries' : 'All findings')], { class: 'btn btn--quiet' }, () =>
+    button([icon('chevronLeft'), h('span', { class: 'btn__label' }, pick(t.allInjuries, audience))], { class: 'btn btn--quiet' }, () =>
       nav.back(),
     ),
     nav.total > 1
@@ -61,16 +66,21 @@ export function renderLesionDetail(
           'div',
           { class: 'lesion__pager' },
           button(icon('chevronLeft'), { class: 'btn btn--icon', 'aria-label': 'Previous finding' }, () => nav.go(-1)),
-          h('span', { class: 'num pager__count' }, `${nav.index + 1} of ${nav.total}`),
+          h('span', { class: 'num pager__count' }, `${nav.index + 1} / ${nav.total}`),
           button(icon('chevronRight'), { class: 'btn btn--icon', 'aria-label': 'Next finding' }, () => nav.go(1)),
         )
       : null,
   );
-  const speak = readAloudButton(() => `${title}. ${l.summary.kids}`, { prominent: kids });
+  const speak = readAloudButton(() => `${title}. ${summaryText}`, {
+    prominent: kids,
+    clipId: () => `lesion-${l.id}-${audience}`,
+    lang: () => ctx.store.get().lang,
+    events: ctx.events,
+  });
   const body: (HTMLElement | null)[] = kids
-    ? [h('p', { class: 'lede' }, l.summary.kids), speak]
+    ? [h('p', { class: 'lede' }, loc.summary.kids), speak]
     : [
-        h('p', { class: 'lede' }, l.summary.clinician),
+        h('p', { class: 'lede' }, loc.summary.clinician),
         clinicalFacts(l),
         l.evidence === 'debated' || l.debateNote
           ? h(

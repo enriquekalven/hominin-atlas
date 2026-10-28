@@ -1,57 +1,60 @@
 /**
- * Overview tab: full skin-and-attire life reconstruction + close-up portrait switcher, read-aloud,
- * overview text, key stats, traits, fun facts (kids), lifestyle and (clinician) sources.
+ * Overview tab: full skin-and-attire life reconstruction + close-up portrait switcher, Chirp 3 HD read-aloud,
+ * localized overview text, key stats, traits, fun facts (kids), lifestyle and (clinician) sources.
  */
-import type { Audience, Species } from '../../data/types';
+import type { Audience, LangCode, Species } from '../../data/types';
+import { localizedSpecies, uiText, type LocalizedSpeciesEntry } from '../../i18n';
 import type { UICtx } from '../context';
 import { currentSpecies, watch } from '../context';
 import { append, button, h } from '../dom';
 import { DASH, formatKaRange, formatMeasure } from '../format';
-import { PORTRAIT_CAPTION, STAT_LABEL, pick } from '../labels';
-import { ATTIRE_SUMMARY, openLifeDialog, portrait, reconstruction } from '../portrait';
+import { pick } from '../labels';
+import { openLifeDialog, portrait, reconstruction } from '../portrait';
 import { readAloudButton } from '../speech';
 import { emptyState, sectionTitle, segmented } from '../widgets';
 import { renderCitations } from './citations';
 import type { TabView } from './index';
 
-function statsTable(sp: Species, audience: Audience): HTMLTableElement {
+function statsTable(sp: Species, audience: Audience, lang: LangCode): HTMLTableElement {
+  const t = uiText(lang);
   const row = (label: string, value: string) =>
     h('tr', null, h('th', { scope: 'row' }, label), h('td', { class: 'num' }, value || DASH));
   return h(
     'table',
     { class: 'stats' },
-    h('caption', { class: 'sr-only' }, 'Key facts'),
+    h('caption', { class: 'sr-only' }, pick(t.quickFacts, audience)),
     h(
       'tbody',
       null,
-      row(pick(STAT_LABEL.brain, audience), formatMeasure(sp.brainCc, 'cc')),
-      row(pick(STAT_LABEL.stature, audience), formatMeasure(sp.statureCm, 'cm')),
-      row(pick(STAT_LABEL.mass, audience), formatMeasure(sp.massKg, 'kg')),
-      row(pick(STAT_LABEL.range, audience), formatKaRange(sp.rangeKa.start, sp.rangeKa.end)),
-      row(pick(STAT_LABEL.regions, audience), sp.regions.length ? sp.regions.join(', ') : DASH),
+      row(pick(t.brain, audience), formatMeasure(sp.brainCc, 'cc')),
+      row(pick(t.stature, audience), formatMeasure(sp.statureCm, 'cm')),
+      row(pick(t.mass, audience), formatMeasure(sp.massKg, 'kg')),
+      row(pick(t.range, audience), formatKaRange(sp.rangeKa.start, sp.rangeKa.end)),
+      row(pick(t.regions, audience), sp.regions.length ? sp.regions.join(', ') : DASH),
     ),
   );
 }
 
-function lifestyle(sp: Species, audience: Audience, attireNote: string): HTMLElement {
+function lifestyle(loc: LocalizedSpeciesEntry, audience: Audience, lang: LangCode, attireNote: string): HTMLElement {
+  const t = uiText(lang);
   const item = (label: string, text: string) => [h('dt', null, label), h('dd', null, text || DASH)];
   return h(
     'dl',
     { class: 'facts' },
-    item(audience === 'kids' ? 'Skin, hair & clothes' : 'Integument & attire', attireNote),
-    item(pick(STAT_LABEL.locomotion, audience), pick(sp.locomotion, audience)),
-    item(pick(STAT_LABEL.diet, audience), pick(sp.diet, audience)),
-    item(pick(STAT_LABEL.technology, audience), pick(sp.technology, audience)),
+    item(pick(t.skinAttireLabel, audience), attireNote),
+    item(pick(t.locomotion, audience), pick(loc.locomotion, audience)),
+    item(pick(t.diet, audience), pick(loc.diet, audience)),
+    item(pick(t.technology, audience), pick(loc.technology, audience)),
   );
 }
 
 export function createOverviewTab(ctx: UICtx): TabView {
   let heroView: 'attire' | 'bust' = 'attire';
   return {
-    key: (s) => `${s.speciesId}|${s.audience}`,
+    key: (s) => `${s.speciesId}|${s.audience}|${s.lang}`,
     render(pane, scope) {
       const sp = currentSpecies(ctx);
-      const audience = ctx.store.get().audience;
+      const { audience, lang } = ctx.store.get();
       if (!sp) {
         pane.appendChild(
           emptyState(
@@ -64,26 +67,33 @@ export function createOverviewTab(ctx: UICtx): TabView {
         return;
       }
       const kids = audience === 'kids';
-      const traits = kids ? sp.keyTraits.kids : sp.keyTraits.clinician;
-      const attireNote = pick(ATTIRE_SUMMARY[sp.id], audience);
+      const t = uiText(lang);
+      const loc = localizedSpecies(sp, lang);
+      const traits = kids ? loc.keyTraits.kids : loc.keyTraits.clinician;
+      const attireNote = pick(loc.attire, audience);
       const speak = readAloudButton(
         () =>
           (kids
-            ? [sp.common.kids, sp.overview.kids, attireNote, ...sp.funFacts]
-            : [sp.binomial, sp.overview.clinician, attireNote]
+            ? [loc.common.kids, loc.overview.kids, attireNote, ...loc.funFacts]
+            : [sp.binomial, loc.overview.clinician, attireNote]
           ).join('. '),
-        { prominent: kids },
+        {
+          prominent: kids,
+          clipId: () => `${sp.id}-${audience}`,
+          lang: () => ctx.store.get().lang,
+          events: ctx.events,
+        },
       );
 
       const stageWrap = h('div', { class: 'hero__stage' });
       const syncHero = () => {
         const imgEl =
           heroView === 'attire'
-            ? reconstruction(sp, 'portrait--hero portrait--recon', `Life reconstruction of ${sp.common.kids} with skin and attire`)
-            : portrait(sp, 'portrait--hero', `Close-up facial impression of ${sp.common.kids}`);
+            ? reconstruction(sp, 'portrait--hero portrait--recon', `Life reconstruction of ${loc.common.kids} with skin and attire`)
+            : portrait(sp, 'portrait--hero', `Close-up facial impression of ${loc.common.kids}`);
         const trigger = button(
           imgEl,
-          { class: 'hero__zoom', 'aria-label': `Open full-screen skin and attire view for ${sp.common.kids}` },
+          { class: 'hero__zoom', 'aria-label': `Open full-screen skin and attire view for ${loc.common.kids}` },
           () => openLifeDialog(sp, audience),
         );
         stageWrap.replaceChildren(trigger);
@@ -94,8 +104,8 @@ export function createOverviewTab(ctx: UICtx): TabView {
         label: 'Reconstruction view',
         className: 'seg--hero',
         options: [
-          { value: 'attire', label: kids ? 'Skin & clothes' : 'Skin & attire' },
-          { value: 'bust', label: kids ? 'Face close-up' : 'Cranial bust' },
+          { value: 'attire', label: pick(t.skinAttireLabel, audience) },
+          { value: 'bust', label: pick(t.faceBustLabel, audience) },
         ],
         value: heroView,
         onChange: (v) => {
@@ -110,7 +120,7 @@ export function createOverviewTab(ctx: UICtx): TabView {
       );
       scope.add(
         watch(ctx.store, (s) => s.showFlesh, (on) => {
-          toggle3dBtn.textContent = on ? 'Hide 3D skin & clothes' : 'Show on 3D skeleton';
+          toggle3dBtn.textContent = on ? t.hide3DSkinClothes : t.showOn3DSkeleton;
         }),
       );
 
@@ -121,24 +131,19 @@ export function createOverviewTab(ctx: UICtx): TabView {
           h('div', { class: 'hero__bar' }, switcher.el, toggle3dBtn),
           stageWrap,
           h('p', { class: 'hero__attire' }, attireNote),
-          h('figcaption', { class: 'hero__caption' }, PORTRAIT_CAPTION),
+          h('figcaption', { class: 'hero__caption' }, t.portraitDisclaimer),
         ),
-        h('div', { class: 'overview__lede' }, h('p', { class: 'lede' }, pick(sp.overview, audience)), speak),
-        sectionTitle('h3', kids ? 'Quick facts' : 'Key data'),
-        statsTable(sp, audience),
+        h('div', { class: 'overview__lede' }, h('p', { class: 'lede' }, pick(loc.overview, audience)), speak),
+        sectionTitle('h3', pick(t.quickFacts, audience)),
+        statsTable(sp, audience, lang),
         traits.length
-          ? [sectionTitle('h3', kids ? 'What made them special' : 'Diagnostic traits'), h('ul', { class: 'bullets' }, traits.map((t) => h('li', null, t)))]
+          ? [sectionTitle('h3', pick(t.specialTraits, audience)), h('ul', { class: 'bullets' }, traits.map((tr) => h('li', null, tr)))]
           : null,
-        kids && sp.funFacts.length
-          ? h(
-              'section',
-              { class: 'funfacts' },
-              sectionTitle('h3', 'Fun facts'),
-              h('ul', { class: 'bullets' }, sp.funFacts.map((f) => h('li', null, f))),
-            )
+        kids && loc.funFacts.length
+          ? h('section', { class: 'funfacts' }, sectionTitle('h3', t.funFacts), h('ul', { class: 'bullets' }, loc.funFacts.map((f) => h('li', null, f))))
           : null,
-        sectionTitle('h3', kids ? 'Daily life & attire' : 'Behaviour, ecology & attire'),
-        lifestyle(sp, audience, attireNote),
+        sectionTitle('h3', pick(t.dailyLifeAttire, audience)),
+        lifestyle(loc, audience, lang, attireNote),
         !kids ? renderCitations(sp.citations) : null,
       ]);
     },

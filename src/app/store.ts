@@ -7,7 +7,7 @@
  * - Everything else (what-if sliders, selections, tools) resets on reload.
  * No secrets or personal data are stored.
  */
-import { SPECIES_IDS, type Audience, type SpeciesId } from '../data/types';
+import { LANG_CODES, SPECIES_IDS, type Audience, type LangCode, type SpeciesId } from '../data/types';
 import type { BoneId } from '../anatomy/bones';
 
 export type RenderMode = 'fossil' | 'bone' | 'xray';
@@ -17,6 +17,7 @@ export type Tool = 'orbit' | 'measure' | 'section';
 export type Panel = 'overview' | 'injuries' | 'specimens' | 'compare' | 'tree' | 'glossary';
 
 export interface AppState {
+  lang: LangCode;
   audience: Audience;
   speciesId: SpeciesId;
   specimenId: string | null;
@@ -44,6 +45,7 @@ export interface AppState {
 }
 
 export const DEFAULT_STATE: AppState = {
+  lang: 'en',
   audience: 'kids',
   speciesId: 'homo-neanderthalensis',
   specimenId: null,
@@ -71,6 +73,7 @@ const STORAGE_KEY = 'hominin-atlas:v1';
 
 /** Keys that survive reload. Each has a validator so tampered/corrupt storage can't break the app. */
 const MUST_PERSIST: { [K in keyof AppState]?: (v: unknown) => v is AppState[K] } = {
+  lang: (v): v is LangCode => typeof v === 'string' && (LANG_CODES as readonly string[]).includes(v),
   audience: (v): v is Audience => v === 'kids' || v === 'clinician',
   speciesId: (v): v is SpeciesId => typeof v === 'string' && (SPECIES_IDS as readonly string[]).includes(v),
   specimenId: (v): v is string | null => v === null || (typeof v === 'string' && /^[a-z0-9-]{1,64}$/.test(v)),

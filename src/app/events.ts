@@ -2,6 +2,7 @@
  * Typed event bus between the UI and the 3D viewer (one-shot notifications that are not state).
  */
 import type { BoneId } from '../anatomy/bones';
+import type { LangCode } from '../data/types';
 
 export type ScanFormat = 'stl' | 'glb' | 'obj' | 'ply';
 
@@ -29,6 +30,8 @@ export interface EventMap {
   'scan:clear': Record<string, never>;
   /** UI -> Viewer: start / stop the "chomp" or walking demo animation (kids mode). */
   'ui:animate': { kind: 'chomp' | 'walk' | 'none' };
+  /** UI -> Analytics: read-aloud audio started (Chirp 3 HD studio clip or browser fallback). */
+  'ui:speak': { clipId: string; lang: LangCode; mode: 'chirp3-hd' | 'browser-tts' };
 }
 
 type Handler<K extends keyof EventMap> = (payload: EventMap[K]) => void;

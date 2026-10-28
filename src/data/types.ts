@@ -14,6 +14,9 @@ import type { LesionSite } from '../anatomy/sites';
 
 export type Audience = 'kids' | 'clinician';
 
+export const LANG_CODES = ['en', 'ar', 'de', 'nl', 'es', 'fr', 'it', 'pt', 'zh', 'yue', 'ja', 'ko'] as const;
+export type LangCode = (typeof LANG_CODES)[number];
+
 export interface DualText {
   kids: string;
   clinician: string;

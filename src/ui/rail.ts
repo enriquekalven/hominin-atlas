@@ -2,13 +2,14 @@
  * Species rail: oldest → youngest, grouped by clade. A list of buttons with aria-current and a
  * roving tabindex; arrow keys move the selection (selection follows focus), Home / End jump.
  */
-import type { Audience, Species, SpeciesId } from '../data/types';
+import type { Audience, LangCode, Species, SpeciesId } from '../data/types';
+import { localizedSpecies, uiText } from '../i18n';
 import type { UICtx } from './context';
 import { watch } from './context';
 import { button, h, uid } from './dom';
 import { groupSpecies, railOrder } from './filters';
 import { abbreviateBinomial, speciesDates } from './format';
-import { GROUP_LABEL, pick } from './labels';
+import { pick } from './labels';
 import { portrait } from './portrait';
 import { emptyState, taxon } from './widgets';
 import { selectSpecies } from './actions';
@@ -19,15 +20,16 @@ export function mountRail(root: HTMLElement, ctx: UICtx): void {
   const scroller = h('div', { class: 'rail__scroll' });
   root.replaceChildren(h('h2', { class: 'sr-only' }, 'Species'), scroller);
 
-  const item = (sp: Species, audience: Audience): HTMLLIElement => {
+  const item = (sp: Species, audience: Audience, lang: LangCode): HTMLLIElement => {
+    const loc = localizedSpecies(sp, lang);
     const name =
       audience === 'kids'
-        ? h('span', { class: 'rail__name' }, sp.common.kids)
+        ? h('span', { class: 'rail__name' }, loc.common.kids)
         : h('span', { class: 'rail__name' }, taxon(sp.binomial));
     const short = h(
       'span',
       { class: 'rail__short', 'aria-hidden': 'true' },
-      audience === 'kids' ? sp.common.kids : taxon(abbreviateBinomial(sp.binomial)),
+      audience === 'kids' ? loc.common.kids : taxon(abbreviateBinomial(sp.binomial)),
     );
     const b = button(
       [
@@ -38,7 +40,7 @@ export function mountRail(root: HTMLElement, ctx: UICtx): void {
       {
         class: 'rail__item',
         'data-id': sp.id,
-        title: audience === 'kids' ? `${sp.common.kids} (${sp.binomial})` : `${sp.binomial} — ${sp.common.clinician}`,
+        title: audience === 'kids' ? `${loc.common.kids} (${sp.binomial})` : `${sp.binomial} — ${loc.common.clinician}`,
       },
       () => selectSpecies(ctx, sp.id),
     );
@@ -46,7 +48,9 @@ export function mountRail(root: HTMLElement, ctx: UICtx): void {
     return h('li', null, b);
   };
 
-  const build = (audience: Audience) => {
+  const build = () => {
+    const { audience, lang } = store.get();
+    const t = uiText(lang);
     buttons.clear();
     if (ctx.species.length === 0) {
       scroller.replaceChildren(
@@ -62,8 +66,8 @@ export function mountRail(root: HTMLElement, ctx: UICtx): void {
       return h(
         'section',
         { class: 'rail__group', 'aria-labelledby': id },
-        h('h3', { id, class: 'rail__group-title' }, pick(GROUP_LABEL[g.group], audience)),
-        h('ul', { class: 'rail__list', role: 'list' }, g.species.map((sp) => item(sp, audience))),
+        h('h3', { id, class: 'rail__group-title' }, pick(t.groups[g.group], audience)),
+        h('ul', { class: 'rail__list', role: 'list' }, g.species.map((sp) => item(sp, audience, lang))),
       );
     });
     scroller.replaceChildren(...groups);
@@ -77,7 +81,6 @@ export function mountRail(root: HTMLElement, ctx: UICtx): void {
       const on = sid === id;
       if (on) b.setAttribute('aria-current', 'true');
       else b.removeAttribute('aria-current');
-      // Roving tabindex: the selected item (or the first one if none) is the single tab stop.
       b.tabIndex = on || (!hasSelected && first) ? 0 : -1;
       first = false;
     }
@@ -102,6 +105,6 @@ export function mountRail(root: HTMLElement, ctx: UICtx): void {
     buttons.get(sp.id)?.focus();
   });
 
-  watch(store, (s) => s.audience, build);
+  watch(store, (s) => `${s.audience}|${s.lang}`, build);
   store.select((s) => s.speciesId, (id) => sync(id, true));
 }

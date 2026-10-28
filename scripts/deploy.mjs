@@ -12,8 +12,14 @@ const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const SITE_ID = 'hominin-atlas';
 const QUOTA_PROJECT = process.env.GCP_QUOTA_PROJECT || 'project-maui';
 
+let cachedToken = '';
+let cachedTokenAt = 0;
 function getAccessToken() {
-  return execSync('gcloud auth print-access-token', { encoding: 'utf8' }).trim();
+  if (!cachedToken || Date.now() - cachedTokenAt > 15 * 60 * 1000) {
+    cachedToken = execSync('gcloud auth print-access-token', { encoding: 'utf8' }).trim();
+    cachedTokenAt = Date.now();
+  }
+  return cachedToken;
 }
 
 function walkFiles(dir, baseDir = dir) {
