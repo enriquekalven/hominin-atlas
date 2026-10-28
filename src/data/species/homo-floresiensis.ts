@@ -1,0 +1,202 @@
+import type { Species } from '../types';
+
+export const species: Species = {
+  id: 'homo-floresiensis',
+  binomial: 'Homo floresiensis',
+  common: { kids: 'Flores “Hobbit”', clinician: 'Homo floresiensis' },
+  nickname: 'The Hobbit',
+  group: 'island-homo',
+  status: 'extinct',
+  rangeKa: { start: 700, end: 50 },
+  regions: ['Flores, Indonesia'],
+  brainCc: { best: 426, min: 380, max: 426 },
+  statureCm: { best: 106, min: null, max: null },
+  massKg: { best: null, min: null, max: null },
+  locomotion: {
+    kids: 'Walked on two legs, with long, flat feet.',
+    clinician: 'Bipedal with primitive proportions: long, flat feet relative to the femur, a short hallux (Jungers et al. 2009) and an ape/australopith-like wrist (Tocheri et al. 2007).',
+  },
+  diet: {
+    kids: 'They may have eaten meat from young dwarf elephant relatives called Stegodon, plus other animals and plants.',
+    clinician: 'Liang Bua faunal assemblages include Stegodon florensis insularis, giant rats and Komodo dragons; direct dietary evidence for the hominins is limited.',
+  },
+  technology: {
+    kids: 'Made small, simple stone tools.',
+    clinician: 'Simple core-and-flake technology at Liang Bua (~190–50 ka) and at Mata Menge.',
+  },
+  overview: {
+    kids: 'Homo floresiensis was a tiny human relative from the island of Flores in Indonesia. Adults were only about 1 metre tall, as short as a young child today! They lived there for hundreds of thousands of years, along with dwarf elephant relatives, giant rats and Komodo dragons.',
+    clinician:
+      'Small-bodied, small-brained hominin from Liang Bua (skeletal remains ~100–60 ka; artefacts ~190–50 ka; Sutikna et al. 2016) and Mata Menge (~700 ka; van den Bergh et al. 2016; Brumm et al. 2016), where a small adult humerus shows that small body size had evolved by then (Kaifu et al. 2024). Proposed origins: insular dwarfing of an early H. erectus population, or descent from an earlier small-bodied hominin dispersal (Argue et al. 2017). Pathological explanations of LB1 are rejected by most researchers. Brain size and stature are LB1 estimates (426 cm³: Kubo et al. 2013; ~106 cm: Brown et al. 2004).',
+  },
+  keyTraits: {
+    kids: ['Very short, about 1 metre tall', 'Tiny brain, like a chimp’s', 'Big, long feet', 'No chin'],
+    clinician: [
+      'Stature ~106 cm (LB1)',
+      'Endocranial volume ~380–426 cm³ (LB1, method-dependent)',
+      'Primitive wrist morphology',
+      'Long, flat foot with a short hallux',
+      'Chinless mandible with primitive symphyseal buttressing',
+    ],
+  },
+  funFacts: [
+    'Its nickname “Hobbit” comes from the small heroes in J. R. R. Tolkien’s books.',
+    'The skeleton LB1 was found in 2003 in Liang Bua, a cave whose name means “cool cave”.',
+    'Flores was also home to dwarf elephant relatives called Stegodon, giant rats and Komodo dragons.',
+    'Fossils from Mata Menge show that tiny humans already lived on Flores about 700,000 years ago.',
+    'In 2016, new dating showed that the Liang Bua skeletons are about 100,000–60,000 years old, much older than the 18,000 years first reported.',
+    'Its brain was only about a third the size of ours, yet it made stone tools.',
+  ],
+  ancestry: {
+    parent: 'homo-erectus',
+    uncertain: true,
+    note: 'Either an insular-dwarfed descendant of early H. erectus (supported by Mata Menge dental similarities; van den Bergh et al. 2016; Kaifu et al. 2024) or the descendant of an earlier, small-bodied hominin dispersal out of Africa (Argue et al. 2017).',
+  },
+  geneFlow: [],
+  specimens: [
+    {
+      id: 'lb1',
+      catalog: 'LB1',
+      nickname: 'Flo',
+      site: { name: 'Liang Bua', country: 'Indonesia', lat: -8.5, lon: 120.4 },
+      ageKa: {
+        best: null,
+        min: 60,
+        max: 100,
+        method: 'U-series on bones, luminescence and 40Ar/39Ar dating of the enclosing deposits (Sutikna et al. 2016)',
+      },
+      sex: 'female',
+      ageAtDeath: 'Adult, about 30 years (dental wear)',
+      discovery: { year: 2003, by: 'Indonesian–Australian team led by Mike Morwood and R. P. Soejono' },
+      completeness: {
+        percent: null,
+        found: ['cranium', 'mandible'],
+        partial: ['teeth', 'pelvis', 'leg_L', 'leg_R', 'foot_L', 'foot_R', 'carpals_L', 'arm_R'],
+      },
+      story: {
+        kids: 'In 2003, scientists digging deep in a cave on the island of Flores found a tiny skeleton. It belonged to an adult woman who stood only about 1 metre tall. Her brain was as small as a chimp’s. People nicknamed her kind “Hobbits”.',
+        clinician:
+          'Partial adult female skeleton: complete cranium and mandible, much of the lower limbs and pelvis, and parts of the hands and feet. Stature ~106 cm; endocranial volume 380 cm³ originally (Brown et al. 2004), ~426 cm³ by later CT-based measurement (Kubo et al. 2013). The bones are unfossilised and very fragile.',
+      },
+      taphonomy: { colors: ['#8a6f4e', '#a88a63', '#4a3825'], note: 'Brown, unfossilised, fragile bone stained by cave sediments.' },
+      lesions: [
+        {
+          id: 'lb1-pathology-hypotheses',
+          kind: 'developmental',
+          bone: 'cranium',
+          site: { anchor: 'vertex' },
+          timing: 'unknown',
+          healing: null,
+          title: { kids: 'Was she ill, or a new species?', clinician: 'Proposed pathological explanations for LB1’s small cranium' },
+          summary: {
+            kids: 'Some scientists wondered if LB1 was a modern human who was ill and grew differently. But bones from other individuals in the cave look the same. Most scientists now agree that she belonged to a real, separate species.',
+            clinician:
+              'Microcephaly, Laron syndrome, endemic cretinism and Down syndrome have each been proposed to explain LB1’s small cranium and body. Most researchers reject these because the same small size and primitive traits occur in other individuals and in much older Mata Menge fossils.',
+          },
+          clinical: {
+            morphology:
+              'Very small but otherwise well-formed cranium with thick vault bones; mild cranial asymmetry (interpreted as taphonomic or developmental). Measured endocranial volume is method-dependent: 380 cm³ (Brown et al. 2004), ~417 cm³ (Falk et al. 2005) and ~426 cm³ (Kubo et al. 2013), in an adult about 106 cm tall.',
+            differential: [
+              'Normal morphology of a distinct species (majority view; Brown et al. 2004; Falk et al. 2007; Baab et al. 2016)',
+              'Primary microcephaly (Jacob et al. 2006)',
+              'Laron syndrome (growth hormone insensitivity) (Hershkovitz et al. 2007)',
+              'Myxoedematous endemic cretinism (Obendorf et al. 2008)',
+              'Down syndrome (Henneberg et al. 2014)',
+            ],
+            modernAnalogue: null,
+            functionalImpact: null,
+            survivalInterval: null,
+          },
+          evidence: 'debated',
+          debateNote:
+            'Pathology hypotheses were built mainly on LB1 alone: microcephaly (Jacob et al. 2006), Laron syndrome (Hershkovitz et al. 2007), endemic cretinism (Obendorf et al. 2008) and Down syndrome (Henneberg et al. 2014). They are rejected by most researchers because (1) other Liang Bua individuals, such as the LB6 mandible, share the same small size and primitive traits (Morwood et al. 2005); (2) LB1’s wrist, foot and limb proportions are primitive rather than pathological (Tocheri et al. 2007; Jungers et al. 2009); (3) LB1’s endocast shape differs from those of microcephalic humans (Falk et al. 2005, 2007), and targeted re-examinations found no support for Laron syndrome (Falk et al. 2009), cretinism (Brown 2012) or Down syndrome (Baab et al. 2016); and (4) ~700 ka fossils from Mata Menge are similarly small (van den Bergh et al. 2016). Proponents (e.g., Henneberg et al. 2014) argue that LB1’s asymmetry and proportions fit Down syndrome.',
+          citations: [
+            'henneberg2014',
+            'falk2007',
+            'vandenbergh2016',
+            'brown2004',
+            'falk2005',
+            'kubo2013',
+            'jacob2006',
+            'hershkovitz2007',
+            'obendorf2008',
+            'falk2009',
+            'brown2012',
+            'baab2016',
+            'morwood2005',
+            'tocheri2007',
+            'jungers2009',
+          ],
+          render: { severity: 0.2 },
+        },
+      ],
+      citations: ['brown2004', 'morwood2004', 'morwood2005', 'sutikna2016', 'falk2005', 'kubo2013'],
+      isFlagship: true,
+    },
+    {
+      id: 'lb6',
+      catalog: 'LB6',
+      nickname: null,
+      site: { name: 'Liang Bua', country: 'Indonesia', lat: -8.5, lon: 120.4 },
+      ageKa: {
+        best: null,
+        min: 60,
+        max: 100,
+        method: 'Revised Liang Bua stratigraphy and chronology for the H. floresiensis skeletal remains (Sutikna et al. 2016)',
+      },
+      sex: 'unknown',
+      ageAtDeath: 'Adult',
+      discovery: { year: null, by: 'Indonesian–Australian Liang Bua team' },
+      completeness: { percent: null, found: [], partial: ['mandible', 'teeth_lower'] },
+      story: {
+        kids: 'A second small lower jaw from the same cave as Flo. Like hers, it has no chin. Finding more small people like Flo helped show that they were a real kind of human, not just one unusual person.',
+        clinician:
+          'Adult mandible of a second individual, described by Morwood et al. (2005). It repeats LB1’s distinctive mandibular morphology, including the absence of a chin, showing that LB1’s anatomy recurs in other individuals: a key argument against an individual-pathology explanation for LB1.',
+      },
+      taphonomy: { colors: ['#86694a', '#a3845e', '#463422'], note: 'Fragile, poorly mineralised brown bone, like LB1.' },
+      lesions: [],
+      citations: ['morwood2005', 'sutikna2016'],
+      isFlagship: false,
+    },
+    {
+      id: 'mata-menge-mandible',
+      // Descriptive label: the catalogue number is not confirmed in the sources used here.
+      catalog: 'Mata Menge mandible fragment',
+      nickname: null,
+      // Approximate (So’a Basin, central Flores).
+      site: { name: 'Mata Menge, So’a Basin', country: 'Indonesia', lat: -8.7, lon: 121.1 },
+      ageKa: {
+        best: 700,
+        min: null,
+        max: null,
+        method: '40Ar/39Ar and fission-track dating of volcanic deposits bracketing the fossil layer (Brumm et al. 2016)',
+      },
+      sex: 'unknown',
+      ageAtDeath: 'Adult',
+      discovery: { year: null, by: 'Indonesian–Australian–Japanese team working in the So’a Basin' },
+      completeness: { percent: null, found: [], partial: ['mandible', 'teeth_lower'] },
+      story: {
+        kids: 'A piece of a tiny lower jaw, about 700,000 years old. It shows that small humans lived on Flores a very, very long time ago, long before Flo.',
+        clinician:
+          'Adult partial mandible, found with isolated teeth, from the So’a Basin (~700 ka; Brumm et al. 2016). Its size is comparable to or smaller than LB1’s, and the teeth share features with early Javanese H. erectus, suggesting that small body size evolved early from an H. erectus-like ancestor (van den Bergh et al. 2016). A small adult humerus fragment from the same site supports early body-size reduction (Kaifu et al. 2024).',
+      },
+      taphonomy: { colors: ['#7f6c57', '#9d8872', '#40352b'], note: 'Mineralised, grey-brown fossil.' },
+      lesions: [],
+      citations: ['vandenbergh2016', 'brumm2016', 'kaifu2024'],
+      isFlagship: false,
+    },
+  ],
+  citations: [
+    'brown2004',
+    'morwood2004',
+    'morwood2005',
+    'sutikna2016',
+    'vandenbergh2016',
+    'brumm2016',
+    'kaifu2024',
+    'kubo2013',
+    'tocheri2007',
+    'jungers2009',
+    'argue2017',
+  ],
+};

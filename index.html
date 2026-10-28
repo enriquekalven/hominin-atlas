@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!--CSP-->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="description" content="Interactive 3D atlas of human evolution: compare the bones, skulls and healed fractures of Homo sapiens, Neanderthals, Denisovans, the Flores 'hobbits' and our other ancient relatives." />
+    <title>Hominin Atlas · Bones, breaks and our family tree</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#panel">Skip to species information</a>
+    <div id="app" class="app" data-audience="kids">
+      <header id="topbar" class="topbar"></header>
+      <nav id="rail" class="rail" aria-label="Species"></nav>
+      <main id="stage" class="stage">
+        <div id="viewport" class="viewport" role="application" aria-label="3D skeleton viewer. Drag to rotate, scroll to zoom."></div>
+        <div id="viewport-overlay" class="viewport-overlay"></div>
+      </main>
+      <aside id="panel" class="panel" aria-label="Species information" tabindex="-1"></aside>
+      <footer id="timeline" class="timeline" aria-label="Timeline of human evolution"></footer>
+    </div>
+    <div id="modal-root"></div>
+    <div id="toast-root" class="toast-root" aria-live="polite"></div>
+    <noscript>This atlas needs JavaScript and WebGL 2.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
