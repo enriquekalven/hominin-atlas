@@ -85,3 +85,61 @@ describe('stage: appearance while bone meshes stream in', () => {
     expect(stage.primaryActor()!.fleshGroup.visible).toBe(true);
   });
 });
+
+describe('viewer tools: lifelike figure picking & caliper measurement', () => {
+  it('selects another species when tapping its 3D lifelike photo-mesh in size line-up', async () => {
+    const { createStore } = await import('../src/app/store');
+    const { createViewerTools } = await import('../src/viewer/tools');
+    const scene = new THREE.Scene();
+    const store = createStore({ speciesId: 'homo-sapiens', lineup: true, showFlesh: true }, null);
+    const events = createEventBus();
+    const tools = createViewerTools(scene, store, events);
+
+    const mesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 2),
+      new THREE.MeshBasicMaterial(),
+    );
+    mesh.position.set(0, 1, 0);
+    mesh.userData = { isPhotoMesh: true, speciesId: 'homo-floresiensis' };
+    mesh.updateMatrixWorld(true);
+
+    const cam = new THREE.PerspectiveCamera(45, 1, 0.1, 20);
+    cam.position.set(0, 1, 3);
+    cam.lookAt(0, 1, 0);
+    cam.updateMatrixWorld(true);
+
+    const fakeCanvas = {
+      getBoundingClientRect: () => ({ left: 0, top: 0, width: 200, height: 200 }),
+    } as unknown as HTMLCanvasElement;
+
+    tools.handleTap(100, 100, fakeCanvas, cam, [mesh]);
+    expect(store.get().speciesId).toBe('homo-floresiensis');
+
+    // Clinician caliper also measures across 3D photo-meshes.
+    store.set({ audience: 'clinician', lineup: false, tool: 'measure' });
+    let measuredMm = 0;
+    events.on('viewer:measure', ({ mm }) => { measuredMm = mm; });
+    tools.handleTap(100, 90, fakeCanvas, cam, [mesh]);
+    tools.handleTap(100, 110, fakeCanvas, cam, [mesh]);
+    expect(measuredMm).toBeGreaterThan(50);
+    tools.dispose();
+  });
+});
+
+describe('hotspots: screen-space collision separation', () => {
+  it('pushes overlapping projected markers apart so clustered lesions stay independently tappable', async () => {
+    const { separateHotspots } = await import('../src/viewer/hotspots');
+    const pts = [
+      { x: 400, y: 260 },
+      { x: 402, y: 261 },
+      { x: 401, y: 259 },
+    ];
+    separateHotspots(pts, 800, 600, 26);
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        expect(Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y)).toBeGreaterThanOrEqual(25.5);
+      }
+    }
+  });
+});
+

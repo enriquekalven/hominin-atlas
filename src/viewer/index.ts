@@ -35,7 +35,7 @@ export function createViewer(deps: ViewerDeps): ViewerHandle {
 
   let renderer: THREE.WebGLRenderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   } catch {
     const fallback = document.createElement('p');
     fallback.className = 'viewer-stub';
@@ -62,19 +62,21 @@ export function createViewer(deps: ViewerDeps): ViewerHandle {
   addDir(0xffe6c8, 0.55, -1.1, 0.5, 1.4);
   scene.add(new THREE.GridHelper(3.2, 32, 0x29374d, 0x182336));
 
+  let width = 800, height = 600, dirtyFrames = 120;
+  const markDirty = () => { dirtyFrames = 120; };
   const pool = createMeshPool();
   const bank = createMaterialBank();
   const hotspots = createHotspotManager(container, store, events);
   const tools = createViewerTools(scene, store, events);
-  const stage = createStageController(scene, species, pool, bank, hotspots, events);
-  const cam = createCameraRig(canvas, (cx, cy) => tools.handleTap(cx, cy, canvas, cam.camera, stage.pickTargets()));
+  const stage = createStageController(scene, species, pool, bank, hotspots, events, markDirty);
+  const cam = createCameraRig(canvas, (cx, cy) => { markDirty(); tools.handleTap(cx, cy, canvas, cam.camera, stage.pickTargets()); });
 
-  let width = 800, height = 600;
   const syncSize = () => {
     width = Math.max(1, container.clientWidth || 800);
     height = Math.max(1, container.clientHeight || 600);
     renderer.setSize(width, height, false);
     cam.resize(width, height);
+    markDirty();
   };
   syncSize();
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncSize) : null;
@@ -141,6 +143,7 @@ export function createViewer(deps: ViewerDeps): ViewerHandle {
     events.on('ui:animate', ({ kind }) => {
       animKind = kind;
       if (kind === 'none') stage.animate('none', 0);
+      markDirty();
     }),
     events.on('ui:snapshot', () => {
       renderer.render(scene, cam.camera);
@@ -151,11 +154,15 @@ export function createViewer(deps: ViewerDeps): ViewerHandle {
       try {
         scanMesh = buildScanObject(format, buffer);
         scene.add(scanMesh);
+        markDirty();
       } catch {
         events.emit('viewer:error', { message: 'Could not parse the 3D scan file.' });
       }
     }),
-    events.on('scan:clear', clearScanMesh),
+    events.on('scan:clear', () => { clearScanMesh(); markDirty(); }),
+    events.on('viewer:progress', markDirty),
+    events.on('viewer:ready', markDirty),
+    store.subscribe(markDirty),
   ];
 
   let rafId = 0, lastMs = performance.now();
@@ -165,7 +172,9 @@ export function createViewer(deps: ViewerDeps): ViewerHandle {
     lastMs = nowMs;
     const s = store.get();
     if (animKind !== 'none') stage.animate(animKind, nowMs / 1000);
-    cam.step(dt, s.autoRotate && animKind === 'none' && Boolean((window as { __ready?: boolean }).__ready));
+    const camMoved = cam.step(dt, s.autoRotate && animKind === 'none' && Boolean((window as { __ready?: boolean }).__ready));
+    if (animKind === 'none' && !camMoved && dirtyFrames <= 0) return;
+    if (dirtyFrames > 0) dirtyFrames--;
     const showHotspots = !s.lineup && !(s.compareSpeciesId && s.compareMode === 'morph') && (!s.showFlesh || s.renderMode === 'xray' || s.panel === 'injuries');
     hotspots.project(cam.camera, width, height, showHotspots);
     renderer.render(scene, cam.camera);

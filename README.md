@@ -19,7 +19,7 @@ npm run deploy       # Build & deploy to https://hominin-atlas.web.app
 
 Deep links (validated against strict allow-lists on load and updated via `history.replaceState`):
 
-- `?species=homo-neanderthalensis&audience=clinician&panel=injuries&lesion=shanidar-1-cranium`
+- `?species=homo-neanderthalensis&audience=clinician&panel=injuries&lesion=shanidar-1-left-orbit`
 - `?species=homo-floresiensis&audience=kids&mode=bone&frame=skull`
 - `?species=australopithecus-afarensis&compare=homo-sapiens&cmode=side-by-side`
 - `?species=homo-sapiens&lineup=1`
@@ -28,13 +28,13 @@ Deep links (validated against strict allow-lists on load and updated via `histor
 
 | Collection | Count | Source / Location |
 |---|---:|---|
-| Taxa (`SPECIES_IDS`) | **17** | [`src/data/species/`](src/data/species/index.ts) — *S. tchadensis*, *O. tugenensis*, *Ar. ramidus*, *Au. anamensis*, *Au. afarensis*, *K. platyops*, *Au. africanus*, *Au. garhi*, *Au. sediba*, *P. aethiopicus*, *P. boisei*, *P. robustus*, *H. habilis*, *H. rudolfensis*, *H. erectus*, *H. antecessor*, *H. heidelbergensis*, *H. naledi*, *H. floresiensis*, *H. luzonensis*, *Denisovans*, *H. neanderthalensis*, *H. sapiens*, plus living outgroup *Pan troglodytes* |
+| Taxa (`SPECIES_IDS`) | **17** | [`src/data/species/`](src/data/species/index.ts) — *S. tchadensis*, *Ar. ramidus*, *Au. afarensis*, *Au. africanus*, *Au. sediba*, *P. boisei*, *P. robustus*, *H. habilis*, *H. erectus*, *H. heidelbergensis*, *H. naledi*, *H. floresiensis*, *H. luzonensis*, *Denisovans*, *H. neanderthalensis*, *H. sapiens*, plus living outgroup *Pan troglodytes* |
 | Catalogued fossil specimens | **40** | Flagship + secondary specimens with museum accession codes, discovery coordinates, taphonomic palettes, and per-bone completeness (`found` / `partial` / `reconstructed`) |
 | Paleopathological lesions | **24** | Fractures, antemortem callus, cranial depression trauma, sharp-force/projectile injuries, hypervitaminosis A / periostitis, osteoma, fibrous dysplasia, and alveolar resorption |
 | Primary-literature citations | **150** | [`src/data/citations.ts`](src/data/citations.ts) (94 with Crossref DOIs, 56 with Scholar title-search links) |
 | Dual-register glossary terms | **69** | [`src/data/glossary.ts`](src/data/glossary.ts) (`kids` + `clinician` definitions) |
 | Quiz questions | **44** | [`src/data/quiz.ts`](src/data/quiz.ts) (21 kids, 15 clinician, 8 both) |
-| Museum-grade portraits | **17** | [`public/portraits/`](public/portraits/) & [`docs/PORTRAITS.md`](docs/PORTRAITS.md) |
+| Museum-grade portraits & 3D figures | **51** | [`public/portraits/`](public/portraits/), [`public/figures/`](public/figures/), [`public/reconstructions/`](public/reconstructions/) & [`docs/PORTRAITS.md`](docs/PORTRAITS.md) |
 
 ## Architecture
 
@@ -66,13 +66,15 @@ src/
 │   ├── lesions.ts        # 3D SDF modifiers for fractures, callus, depression trauma, periostitis & tooth loss
 │   └── build.ts          # Per-bone SDF + paleopathology builder
 ├── viewer/
-│   ├── index.ts          # Three.js WebGL2 lifecycle, lighting, ResizeObserver, store/event bindings
+│   ├── index.ts          # Three.js WebGL2 lifecycle, on-demand render loop, ResizeObserver, store/event bindings
 │   ├── stage.ts          # Primary, compare (side-by-side / overlay / morph), and size-lineup coordinator
 │   ├── rig.ts            # Hierarchical SkeletonActor, bone mounting, completeness & chomp/walk poses
+│   ├── lifelike.ts       # Photorealistic 3D life reconstruction mesh mounting, caching & pose animation
+│   ├── photoMesh.ts      # Volumetric 3D mesh & anisotropic texture synthesis from front/back studio renders
 │   ├── materials.ts      # Fossil taphonomy, clean osteological bone, and simulated X-ray materials
-│   ├── hotspots.ts       # 3D-to-2D projected <button class="hotspot"> markers with occlusion culling
+│   ├── hotspots.ts       # 3D-to-2D projected <button class="hotspot"> markers with occlusion & collision spacing
 │   ├── camera.ts         # Damped orbital camera rig with first-frame snap and lesion/bone fly-to
-│   ├── tools.ts          # Raycast bone picking, clinician two-point caliper (mm), and section plane
+│   ├── tools.ts          # Raycast bone & figure picking, clinician two-point caliper (mm), and section plane
 │   ├── scanLoader.ts     # Local zero-network STL, OBJ, PLY, and GLB parser
 │   ├── pool.ts           # Web Worker pool with LRU mesh cache and batch cancellation
 │   └── worker.ts         # Off-main-thread SDF + Surface Nets worker
@@ -84,5 +86,5 @@ src/
 ## Security & Scientific Integrity
 
 - **Zero unsafe DOM sinks**: Enforced by [`tests/ui.security.test.ts`](tests/ui.security.test.ts) and [`tests/engine.viewer.test.ts`](tests/engine.viewer.test.ts)—no `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval`, `new Function`, inline `style=""` attributes, or `alert/confirm/prompt`.
-- **Strict Content Security Policy**: Identical CSP in [`vite.config.ts`](vite.config.ts) and [`public/_headers`](public/_headers) (`default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'`).
+- **Strict Content Security Policy**: Identical CSP in [`vite.config.ts`](vite.config.ts), [`public/_headers`](public/_headers), and [`firebase.json`](firebase.json) (`default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`).
 - **Null-honest osteometrics & explicit debate badges**: Unknown measurements are `null` (never `0` or an unlabelled extrapolation), contested diagnoses carry `evidence: 'debated'` with a mandatory `debateNote`, and every procedural 3D skeleton and portrait carries an explicit reconstruction disclosure. See [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md), [`docs/PORTRAITS.md`](docs/PORTRAITS.md), [`docs/UI.md`](docs/UI.md), and [`docs/CONTRACT.md`](docs/CONTRACT.md).

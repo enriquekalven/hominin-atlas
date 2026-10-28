@@ -23,6 +23,39 @@ export interface HotspotManager {
   dispose(): void;
 }
 
+export function separateHotspots(pts: Array<{ x: number; y: number }>, width: number, height: number, minDist = 26): void {
+  const n = pts.length;
+  if (n < 2) return;
+  const pad = 18;
+  for (let pass = 0; pass < 8; pass++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        let dx = pts[j].x - pts[i].x;
+        let dy = pts[j].y - pts[i].y;
+        const d = Math.hypot(dx, dy);
+        if (d >= minDist) continue;
+        if (d < 1e-3) {
+          const ang = ((i * 7 + j * 13) % 12) * ((Math.PI * 2) / 12);
+          dx = Math.cos(ang);
+          dy = Math.sin(ang);
+        } else {
+          dx /= d;
+          dy /= d;
+        }
+        const push = (minDist - d) * 0.52;
+        pts[i].x -= dx * push;
+        pts[i].y -= dy * push;
+        pts[j].x += dx * push;
+        pts[j].y += dy * push;
+      }
+    }
+    for (const p of pts) {
+      p.x = Math.max(pad, Math.min(Math.max(pad, width - pad), p.x));
+      p.y = Math.max(pad, Math.min(Math.max(pad, height - pad), p.y));
+    }
+  }
+}
+
 export function createHotspotManager(container: HTMLElement, store: Store, events: EventBus): HotspotManager {
   const items = new Map<string, HotspotItem>();
   let currentActor: SkeletonActor | null = null;
@@ -121,30 +154,24 @@ export function createHotspotManager(container: HTMLElement, store: Store, event
         return;
       }
       currentActor.root.updateMatrixWorld(true);
+      const placed: Array<{ btn: HTMLButtonElement; x: number; y: number }> = [];
       for (const [id, { btn }] of items) {
         const world = resolveWorldAnchor(id);
-        if (!world) {
-          btn.hidden = true;
-          continue;
-        }
+        if (!world) { btn.hidden = true; continue; }
         tmpPos.copy(world.point).project(camera);
-        if (tmpPos.z < -1 || tmpPos.z > 1) {
-          btn.hidden = true;
-          continue;
-        }
+        if (tmpPos.z < -1 || tmpPos.z > 1) { btn.hidden = true; continue; }
         btn.hidden = false;
-        const x = (tmpPos.x * 0.5 + 0.5) * width;
-        const y = (-tmpPos.y * 0.5 + 0.5) * height;
-        btn.style.left = `${x.toFixed(1)}px`;
-        btn.style.top = `${y.toFixed(1)}px`;
-
         tmpCamDir.copy(camera.position).sub(world.point).normalize();
-        tmpNorm.copy(world.normal);
-        const facing = tmpNorm.dot(tmpCamDir);
-        const occluded = facing < -0.25;
+        const occluded = tmpNorm.copy(world.normal).dot(tmpCamDir) < -0.25;
         btn.classList.toggle('is-hidden', occluded);
         if (occluded) btn.setAttribute('data-occluded', 'true');
         else btn.removeAttribute('data-occluded');
+        placed.push({ btn, x: (tmpPos.x * 0.5 + 0.5) * width, y: (-tmpPos.y * 0.5 + 0.5) * height });
+      }
+      separateHotspots(placed, width, height, 26);
+      for (const p of placed) {
+        p.btn.style.left = `${p.x.toFixed(1)}px`;
+        p.btn.style.top = `${p.y.toFixed(1)}px`;
       }
     },
     resolveWorldAnchor,

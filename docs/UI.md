@@ -61,7 +61,7 @@ Owner: UI engineer. Scope: `src/ui/**`, `public/styles.css`, `public/favicon.svg
 | `viewer:snapshot` | in | decodes the PNG/JPEG/WebP data URL locally and downloads it |
 | `ui:focus-lesion` | out | emitted when a lesion is picked in the panel |
 | `ui:reset-camera`, `ui:snapshot` | out | toolbar buttons, `R` shortcut |
-| `ui:animate` | out | kids "Chomp!" / "Walk" toggles (`none` to stop; reset on species change) |
+| `ui:animate` | out | "Chomp!" / "Mastication" and "Walk" / "Gait" toggles (`none` to stop) |
 | `scan:load`, `scan:clear` | out | after `validateScan` succeeds / from the scan chip |
 
 ## Contract for viewer-owned DOM
@@ -78,7 +78,7 @@ styles them (CSS cannot be injected from TS under the CSP):
 
 ## Keyboard
 
-`←/→` previous/next species · `1/2/3` render mode · `B/S` framing · `R` reset camera · `F` body outline ·
+`←/→` previous/next species · `1/2/3` render mode · `B/S` framing · `R` reset camera · `F` skin & attire ·
 `L` size line-up · `Q` quiz · `?` help · `Esc` close dialog, else clear lesion → bone → tool → line-up.
 Shortcuts are ignored while typing, with modifiers, inside widgets that own arrow keys (rail, tabs, radio
 groups, sliders, timeline bars, tree nodes) and while a dialog is open. The rail and timeline use a roving

@@ -14,7 +14,7 @@ export const SHORTCUTS: readonly { keys: string[]; kids: string; clinician: stri
   { keys: ['1', '2', '3'], kids: 'Fossil, clean bone or X-ray look', clinician: 'Render mode: fossil, clean bone, radiograph (simulated)' },
   { keys: ['B', 'S'], kids: 'Show the whole body or just the skull', clinician: 'Framing: body / skull' },
   { keys: ['R'], kids: 'Reset the camera', clinician: 'Reset camera' },
-  { keys: ['F'], kids: 'Show or hide the body outline', clinician: 'Toggle soft-tissue outline' },
+  { keys: ['F'], kids: 'Show or hide skin and clothes', clinician: 'Toggle 3D skin & attire reconstruction' },
   { keys: ['L'], kids: 'Line everyone up by size', clinician: 'Toggle size line-up' },
   { keys: ['Q'], kids: 'Open the quiz', clinician: 'Open the quiz' },
   { keys: ['?'], kids: 'Show this help', clinician: 'Show this help' },

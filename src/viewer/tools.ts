@@ -71,7 +71,9 @@ export function createViewerTools(scene: THREE.Scene, store: Store, events: Even
       ndc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(ndc, camera);
 
-      const hits = raycaster.intersectObjects(pickTargets, true).filter((h) => h.object.visible && (h.object as THREE.Mesh).userData?.boneId);
+      const hits = raycaster
+        .intersectObjects(pickTargets, true)
+        .filter((h) => h.object.visible && ((h.object as THREE.Mesh).userData?.boneId || (h.object as THREE.Mesh).userData?.isPhotoMesh));
       const s = store.get();
 
       if (s.tool === 'measure' && s.audience === 'clinician') {

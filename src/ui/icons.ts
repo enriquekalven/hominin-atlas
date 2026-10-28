@@ -44,6 +44,7 @@ const PATHS = {
   info: [CIRCLE(12, 12, 9), 'M12 11v5.5', 'M12 7.8v.1'],
   layers: ['M12 4l9 5-9 5-9-5z', 'M3 14l9 5 9-5'],
   sun: [CIRCLE(12, 12, 4), 'M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2'],
+  link: ['M10 13a5 5 0 0 0 7.1.4l2.1-2.1a5 5 0 0 0-7.1-7.1L10.8 5.5', 'M14 11a5 5 0 0 0-7.1-.4l-2.1 2.1a5 5 0 0 0 7.1 7.1l1.3-1.3'],
 } as const;
 
 export type IconName = keyof typeof PATHS;

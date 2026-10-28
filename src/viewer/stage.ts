@@ -35,7 +35,7 @@ const markReady = (): void => { (globalThis as { __ready?: boolean }).__ready = 
 const compareLook = (s: AppState): 'overlay' | 'side' => (s.compareMode === 'overlay' ? 'overlay' : 'side');
 
 export function createStageController(
-  scene: THREE.Scene, speciesList: readonly Species[], pool: MeshPool, bank: MaterialBank, hotspots: HotspotManager, events: EventBus,
+  scene: THREE.Scene, speciesList: readonly Species[], pool: MeshPool, bank: MaterialBank, hotspots: HotspotManager, events: EventBus, onInvalidate?: () => void,
 ): StageController {
   const byId = new Map<SpeciesId, Species>(speciesList.map((s) => [s.id, s]));
   let primary: SkeletonActor | null = null, secondary: SkeletonActor | null = null, lineupActors: SkeletonActor[] = [];
@@ -81,7 +81,7 @@ export function createStageController(
     let totalBones = 0, doneBones = 0;
     lineupActors = valid.map((id, i) => {
       const m = getModel({ speciesId: id });
-      const act = createSkeletonActor(id, getSpecimen(byId.get(id)!, null), m.params, m.layout, bank);
+      const act = createSkeletonActor(id, getSpecimen(byId.get(id)!, null), m.params, m.layout, bank, onInvalidate);
       act.root.position.x = startX + i * spacing;
       scene.add(act.root);
       if (id === sp.id) primary = act;
@@ -96,11 +96,9 @@ export function createStageController(
           if (doneBones % 12 === 0 || doneBones === totalBones) events.emit('viewer:progress', { done: doneBones, total: totalBones, label: boneId });
         });
         applyActorAppearance(act, bank, latest(state), act.speciesId === sp.id ? 'primary' : 'lineup');
+        onInvalidate?.();
       }
-      if (batchId === batchSeq) {
-        markReady();
-        events.emit('viewer:ready', { speciesId: sp.id });
-      }
+      if (batchId === batchSeq) { markReady(); events.emit('viewer:ready', { speciesId: sp.id }); }
     })();
   }
 
@@ -122,14 +120,14 @@ export function createStageController(
       const q: Quality = qualityOverride ?? (isMorph ? 'preview' : 'high');
 
       const { params, layout } = getModel({ speciesId: sp.id, morph });
-      const act = createSkeletonActor(sp.id, spec, params, layout, bank);
+      const act = createSkeletonActor(sp.id, spec, params, layout, bank, onInvalidate);
       primary = act;
       scene.add(act.root);
 
       let cmpActor: SkeletonActor | null = null;
       if (cmpId && !isMorph && byId.has(cmpId)) {
         const cm = getModel({ speciesId: cmpId });
-        cmpActor = createSkeletonActor(cmpId, getSpecimen(byId.get(cmpId)!, null), cm.params, cm.layout, bank);
+        cmpActor = createSkeletonActor(cmpId, getSpecimen(byId.get(cmpId)!, null), cm.params, cm.layout, bank, onInvalidate);
         secondary = cmpActor;
         scene.add(cmpActor.root);
         const side = state.compareMode === 'side-by-side';
@@ -148,7 +146,7 @@ export function createStageController(
           if (!readyFired && done >= Math.min(18, total)) { readyFired = true; events.emit('viewer:ready', { speciesId: sp.id }); }
         });
         if (cmpActor && batchId === batchSeq) {
-          await populateActor(batchId, cmpActor, [], 'preview', 1, null, () => applyActorAppearance(cmpActor!, bank, latest(state), compareLook(latest(state))));
+          await populateActor(batchId, cmpActor, [], 'preview', 1, null, () => { applyActorAppearance(cmpActor!, bank, latest(state), compareLook(latest(state))); onInvalidate?.(); });
         }
         if (completed && batchId === batchSeq) {
           applyActorAppearance(act, bank, latest(state), 'primary');
@@ -169,6 +167,7 @@ export function createStageController(
           if (!mesh || act !== primary) return;
           mountBoneMesh(act, boneId, mesh, bank);
           applyActorAppearance(act, bank, latest(state), 'primary');
+          onInvalidate?.();
         });
       }
     },

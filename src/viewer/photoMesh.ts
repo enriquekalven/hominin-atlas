@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import type { MorphParams } from '../morph/params';
 
 export interface PhotoMeshData {
-  geometry: THREE.BufferGeometry; atlasTexture: THREE.CanvasTexture; bumpTexture: THREE.CanvasTexture;
+  geometry: THREE.BufferGeometry; atlasTexture: THREE.CanvasTexture;
   basePositions: Float32Array; stature: number;
 }
 
@@ -166,7 +166,6 @@ export function buildPhotoMeshFromImages(
   ctxA.putImageData(atlasImg, 0, 0);
   // Rows are stretched to a fixed width (head ~4.6x wider than tall): anisotropic sampling keeps faces sharp.
   const atlasTexture = new THREE.CanvasTexture(atlasCanvas); atlasTexture.wrapS = THREE.RepeatWrapping; atlasTexture.colorSpace = THREE.SRGBColorSpace; atlasTexture.anisotropy = 16;
-  const bumpTexture = new THREE.CanvasTexture(atlasCanvas); bumpTexture.wrapS = THREE.RepeatWrapping;
 
   const pos: number[] = [], uvs: number[] = [], indices: number[] = [];
   const addTube = (gy0: number, gy1: number, getBounds: (gy: number) => [number, number], isLeg: boolean) => {
@@ -194,5 +193,5 @@ export function buildPhotoMeshFromImages(
   } else addTube(0, gh - 1, (gy) => [xL[gy], xR[gy]], false);
   const geometry = new THREE.BufferGeometry(), basePositions = new Float32Array(pos);
   geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(basePositions), 3)); geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2));
-  geometry.setIndex(indices); geometry.computeVertexNormals(); return { geometry, atlasTexture, bumpTexture, basePositions, stature };
+  geometry.setIndex(indices); geometry.computeVertexNormals(); return { geometry, atlasTexture, basePositions, stature };
 }

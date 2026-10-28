@@ -43,7 +43,9 @@ export function prioritizeBones(layout: Layout, lesions: readonly Lesion[]): str
   return all.sort((a, b) => rank(a) - rank(b));
 }
 
-export function createSkeletonActor(speciesId: SpeciesId, specimen: Specimen | undefined, params: MorphParams, layout: Layout, bank: MaterialBank): SkeletonActor {
+export function createSkeletonActor(
+  speciesId: SpeciesId, specimen: Specimen | undefined, params: MorphParams, layout: Layout, bank: MaterialBank, onInvalidate?: () => void,
+): SkeletonActor {
   const root = new THREE.Group();
   const groups = new Map<GroupId, THREE.Group>();
   const restMatrices = new Map<GroupId, THREE.Matrix4>();
@@ -56,7 +58,7 @@ export function createSkeletonActor(speciesId: SpeciesId, specimen: Specimen | u
     groups.set(g.id, o);
     (g.parent ? groups.get(g.parent)! : root).add(o);
   }
-  const fleshGroup = buildLifelikeBody(speciesId, layout, params, groups, bank.clip);
+  const fleshGroup = buildLifelikeBody(speciesId, layout, params, groups, bank.clip, onInvalidate);
   fleshGroup.visible = false;
   root.add(fleshGroup);
   const bones = new Map<string, BoneEntry>();
@@ -130,11 +132,7 @@ export function applyActorAppearance(actor: SkeletonActor, bank: MaterialBank, s
       entry.colorKey = colorKey;
     }
     const isGhost = status === 'reconstructed' && mode === 'primary';
-    if (solidFlesh) {
-      mesh.visible = mode === 'primary' && state.selectedBoneId === boneId;
-    } else {
-      mesh.visible = isGhost ? state.showReconstructed : true;
-    }
+    mesh.visible = solidFlesh ? (mode === 'primary' && state.selectedBoneId === boneId) : (isGhost ? state.showReconstructed : true);
     mesh.material = state.renderMode === 'xray' ? (isGhost ? bank.xrayGhost : bank.xray)
       : isGhost ? bank.ghost
       : mode === 'primary' && state.selectedBoneId === boneId ? bank.boneSelected
@@ -146,10 +144,12 @@ export function applyActorAppearance(actor: SkeletonActor, bank: MaterialBank, s
   for (const m of mats) {
     if (m instanceof THREE.MeshStandardMaterial) {
       const isXray = state.renderMode === 'xray';
-      m.transparent = isXray;
       m.opacity = isXray ? 0.38 : 1;
-      m.depthWrite = !isXray;
-      m.needsUpdate = true;
+      if (m.transparent !== isXray) {
+        m.transparent = isXray;
+        m.depthWrite = !isXray;
+        m.needsUpdate = true;
+      }
     }
   }
 }

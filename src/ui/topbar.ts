@@ -55,6 +55,15 @@ export function mountTopbar(root: HTMLElement, ctx: UICtx, actions: TopbarAction
     className: 'tb-btn',
   });
   const quiz = iconButton('quiz', 'Quiz', () => store.set({ quizOpen: true }), { class: 'btn tb-btn tb-quiz' });
+  const shareLink = () => {
+    const url = window.location.href;
+    const okMsg = store.get().audience === 'kids' ? 'Link copied! Share this hominin with a friend.' : 'Deep link copied to clipboard.';
+    if (navigator.clipboard?.writeText) {
+      void navigator.clipboard.writeText(url).then(() => ctx.toast(okMsg, 'success'), () => ctx.toast(url, 'info'));
+    } else {
+      ctx.toast(url, 'info');
+    }
+  };
   const tools = h(
     'div',
     { class: 'tb-tools', role: 'group', 'aria-label': 'Tools' },
@@ -63,6 +72,7 @@ export function mountTopbar(root: HTMLElement, ctx: UICtx, actions: TopbarAction
     quiz,
     iconButton('book', 'Glossary', () => openTab(ctx, 'glossary'), { class: 'btn tb-btn' }),
     iconButton('upload', 'Load scan', () => actions.openScan(), { class: 'btn tb-btn' }),
+    iconButton('link', 'Share', shareLink, { class: 'btn tb-btn', title: 'Copy link to current view' }),
   );
   const help = iconButton('help', 'Help', () => actions.openHelp(), {
     class: 'btn tb-btn tb-help',

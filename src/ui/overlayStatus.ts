@@ -47,7 +47,8 @@ export function overlayChips(ctx: UICtx): HTMLElement {
   const boneChip = h('div', { class: 'chip chip--status', hidden: true });
   const compareChip = h('div', { class: 'chip chip--status', hidden: true });
   const lineupChip = h('div', { class: 'chip chip--status', hidden: true });
-  wrap.append(boneChip, compareChip, lineupChip);
+  const legendChip = h('div', { class: 'chip chip--status', hidden: true });
+  wrap.append(boneChip, compareChip, lineupChip, legendChip);
 
   const closeBtn = (label: string, fn: () => void) => button(icon('close'), { class: 'chip__close', 'aria-label': label }, fn);
   watch(store, (s) => `${s.selectedBoneId}|${s.audience}`, () => {
@@ -82,6 +83,20 @@ export function overlayChips(ctx: UICtx): HTMLElement {
       closeBtn('Exit size line-up', () => store.set({ lineup: false })),
     );
   });
+  watch(store, (s) => `${s.showReconstructed}|${s.showFlesh}|${s.lineup}|${s.audience}`, () => {
+    const s = store.get();
+    const show = s.showReconstructed && !s.showFlesh && !s.lineup;
+    legendChip.hidden = !show;
+    if (!show) return legendChip.replaceChildren();
+    legendChip.replaceChildren(
+      icon('ghost'),
+      h(
+        'span',
+        { class: 'chip__label' },
+        s.audience === 'kids' ? 'Solid = real fossil · Clear = missing bone' : 'Solid: preserved · Translucent: reconstructed',
+      ),
+    );
+  });
   return wrap;
 }
 
@@ -100,6 +115,7 @@ export function measurementReadout(ctx: UICtx): HTMLElement {
 
 export function kidsActions(ctx: UICtx): HTMLElement {
   let playing: 'chomp' | 'walk' | 'none' = 'none';
+  let lastSpecies = ctx.store.get().speciesId;
   const set = (kind: 'chomp' | 'walk' | 'none') => {
     playing = kind;
     chomp.update(kind === 'chomp');
@@ -109,9 +125,16 @@ export function kidsActions(ctx: UICtx): HTMLElement {
   const chomp = toggleButton({ label: 'Chomp!', icon: 'chomp', pressed: false, onToggle: (on) => set(on ? 'chomp' : 'none'), className: 'btn--fun' });
   const walk = toggleButton({ label: 'Walk', icon: 'walk', pressed: false, onToggle: (on) => set(on ? 'walk' : 'none'), className: 'btn--fun' });
   const wrap = h('div', { class: 'ov-kids', role: 'group', 'aria-label': 'Animations' }, chomp.el, walk.el);
-  watch(ctx.store, (s) => `${s.audience}|${s.speciesId}`, () => {
-    wrap.hidden = ctx.store.get().audience !== 'kids';
-    if (playing !== 'none') set('none');
+  watch(ctx.store, (s) => `${s.audience}|${s.speciesId}|${s.lineup}`, () => {
+    const s = ctx.store.get();
+    const chompSpan = chomp.el.querySelector('.btn__label');
+    const walkSpan = walk.el.querySelector('.btn__label');
+    if (chompSpan) chompSpan.textContent = s.audience === 'kids' ? 'Chomp!' : 'Mastication';
+    if (walkSpan) walkSpan.textContent = s.audience === 'kids' ? 'Walk' : 'Gait';
+    if (s.speciesId !== lastSpecies) {
+      lastSpecies = s.speciesId;
+      if (playing !== 'none' && !s.lineup) set('none');
+    }
   });
   return wrap;
 }

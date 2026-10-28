@@ -209,8 +209,27 @@ try {
   }
   await page.keyboard.press('Escape');
 
+  // 8. Test GPU Walk & Chomp shader compilation on 3D lifelike photoMesh (zero WebGL shader errors)
+  await page.click('button:has-text("Walk")');
+  await page.waitForTimeout(250);
+  await page.click('button:has-text("Chomp!")');
+  await page.waitForTimeout(250);
+  await page.click('button:has-text("Chomp!")');
+
+  // 9. Test URL deep-link query boot (?species=homo-floresiensis&audience=clinician&mode=bone&frame=skull)
+  await page.goto(`${baseUrl}/?species=homo-floresiensis&audience=clinician&mode=bone&frame=skull`, { waitUntil: 'load' });
+  await page.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  const deepLinkCheck = await page.evaluate(() => {
+    const s = window.__atlas.getState();
+    return { speciesId: s.speciesId, audience: s.audience, renderMode: s.renderMode, framing: s.framing };
+  });
+  assert(deepLinkCheck.speciesId === 'homo-floresiensis', `Deep link species mismatch: ${deepLinkCheck.speciesId}`);
+  assert(deepLinkCheck.audience === 'clinician', `Deep link audience mismatch: ${deepLinkCheck.audience}`);
+  assert(deepLinkCheck.renderMode === 'bone', `Deep link renderMode mismatch: ${deepLinkCheck.renderMode}`);
+  assert(deepLinkCheck.framing === 'skull', `Deep link framing mismatch: ${deepLinkCheck.framing}`);
+
   assert(errors.length === 0, `Unexpected browser errors:\n${errors.join('\n')}`);
-  console.log('[smoke] PASS — all WebGL viewer, hotspot, comparison, family-tree, and skin & attire checks succeeded with 0 errors.');
+  console.log('[smoke] PASS — all WebGL viewer, hotspot, comparison, family-tree, GPU lifelike shader, and deep-link checks succeeded with 0 errors.');
 } finally {
   if (browser) await browser.close();
   await server.close();

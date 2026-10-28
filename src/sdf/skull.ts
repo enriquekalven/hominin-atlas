@@ -386,7 +386,7 @@ export function buildSkull(p: SkullParams, opts: SkullOptions = {}): SkullGeomet
       [O[0], O[1] + oH * 0.5 + br * 0.6, O[2] + 0.004 * s + p.browProjection * 0.4],
       [0.006 * s, yN + 0.006 * s + br * 0.45, zG - br * 0.85],
     ],
-    [br * 0.8, br, br * (0.55 + 0.45 * p.browContinuous)],
+    [br * 0.62, br, br * (0.55 + 0.45 * p.browContinuous)],
   );
   const glabella = capsule([-0.006 * s, yN + 0.006 * s + br * 0.45, zG - br * 0.85], [0.006 * s, yN + 0.006 * s + br * 0.45, zG - br * 0.85],
     br * (0.5 + 0.5 * p.browContinuous));
@@ -624,11 +624,11 @@ export function buildSkull(p: SkullParams, opts: SkullOptions = {}): SkullGeomet
   const pad = 0.012 * s;
   const halfW = Math.max(B / 2, p.faceWidth / 2) + pad;
   const craniumBounds: AABB = {
-    min: [-halfW, Math.min(yOcc + chM - 0.004 * s, -0.045 * s) - pad, zO - 0.018 * s - pad],
+    min: [-halfW, Math.min(yOcc - halfFront - 0.006 * s, -0.045 * s) - pad, zO - 0.018 * s - pad],
     max: [halfW, H + p.sagittalCrest + 0.006 * s + pad, Math.max(zG, zFace + 0.012 * s, Pz) + 0.01 * s + pad],
   };
   const mandibleBounds: AABB = {
-    min: [-(gF[0] + 0.014 * s) - pad, yBaseL - 0.006 * s - pad, gF[2] - 0.012 * s - pad],
+    min: [-(gF[0] + 0.014 * s) - pad, yBaseL - 0.006 * s - pad, Math.min(gF[2] - 0.022 * s, zEnd - 0.016 * s) - pad],
     max: [gF[0] + 0.014 * s + pad, gF[1] + 0.008 * s + pad, zSym + T + 0.012 * s + pad],
   };
   const tp = (upper: boolean) => aabbFromPoints(teeth.filter((tt) => tt.upper === upper).map((tt) => tt.position), 0.028 * s);

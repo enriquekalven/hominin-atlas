@@ -11,7 +11,7 @@ export interface CameraRig {
   /** `focus` (figure-root frame) is where Skull framing aims; without it, an upright head height is assumed. */
   frame(stature: number, framing: Framing, spanX?: number, instant?: boolean, focus?: readonly number[]): void;
   focusOn(point: THREE.Vector3, normal: THREE.Vector3, distance?: number): void;
-  step(dtSec: number, autoRotate: boolean): void;
+  step(dtSec: number, autoRotate: boolean): boolean;
   wasClick(): boolean;
   dispose(): void;
 }
@@ -173,16 +173,16 @@ export function createCameraRig(canvas: HTMLCanvasElement, onTap?: (clientX: num
       goalDist = clamp(distance, 0.22, 1.2);
     },
     step(dtSec, autoRotate) {
-      const idle = performance.now() - lastUserMs > 4800 && pointers.size === 0;
-      if (autoRotate && idle && !focusedClose) goalTheta += dtSec * 0.24;
+      const spinning = autoRotate && performance.now() - lastUserMs > 4800 && pointers.size === 0 && !focusedClose;
+      if (spinning) goalTheta += dtSec * 0.24;
       const k = 1 - Math.exp(-Math.min(0.1, dtSec) * 11);
-      // Shortest-angle wrap for theta so fly-to never spins the long way around.
       const diff = ((goalTheta - theta + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
-      theta += diff * k;
-      phi += (goalPhi - phi) * k;
-      dist += (goalDist - dist) * k;
-      target.lerp(goalTarget, k);
+      const dPhi = goalPhi - phi, dDist = goalDist - dist;
+      const active = spinning || pointers.size > 0 || Math.abs(diff) > 1e-4 || Math.abs(dPhi) > 1e-4 || Math.abs(dDist) > 1e-4 || target.distanceToSquared(goalTarget) > 1e-8;
+      if (!active) return false;
+      theta += diff * k; phi += dPhi * k; dist += dDist * k; target.lerp(goalTarget, k);
       applyTransform();
+      return true;
     },
     wasClick: () => dragMoved < 6,
     dispose() {

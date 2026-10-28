@@ -7,6 +7,7 @@ import { checkAttr, isSafeUrl } from '../src/ui/dom';
 import css from '../public/styles.css?raw';
 import headers from '../public/_headers?raw';
 import viteConfig from '../vite.config.ts?raw';
+import firebaseJsonRaw from '../firebase.json?raw';
 
 // Vite resolves these at test time; no Node typings or fs access needed.
 const SOURCES = import.meta.glob('../src/ui/**/*.ts', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
@@ -97,6 +98,17 @@ describe('static assets', () => {
       const fromVite = new RegExp(`'${name}': '([^']+)'`).exec(vite)?.[1];
       const fromHeaders = new RegExp(`${name}:\\s*(.+)`).exec(headers)?.[1].trim();
       expect(fromHeaders).toBe(fromVite);
+    }
+    const fb = JSON.parse(firebaseJsonRaw) as {
+      hosting?: { headers?: Array<{ source: string; headers: Array<{ key: string; value: string }> }> };
+    };
+    const fbHeaders = Object.fromEntries((fb.hosting?.headers?.[0]?.headers ?? []).map((h) => [h.key, h.value]));
+    expect(fbHeaders['Content-Security-Policy']).toBe(directives.join('; '));
+    expect(fbHeaders['X-Frame-Options']).toBe('DENY');
+    expect(fbHeaders['X-Content-Type-Options']).toBe('nosniff');
+    for (const name of ['Referrer-Policy', 'Permissions-Policy']) {
+      const fromVite = new RegExp(`'${name}': '([^']+)'`).exec(vite)?.[1];
+      expect(fbHeaders[name]).toBe(fromVite);
     }
   });
 });

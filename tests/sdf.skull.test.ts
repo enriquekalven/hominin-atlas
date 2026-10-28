@@ -117,5 +117,53 @@ describe('Lower jaw (mandible) anatomy', () => {
     }).filter((r) => !(r.gonialDeg >= 105 && r.gonialDeg <= 135));
     expect(outOfRange).toEqual([]);
   });
+
+  it('cranium and mandible AABBs fully enclose all 17 species with zero boundary-clipped open mesh edges', async () => {
+    const violations: string[] = [];
+    for (const id of SPECIES_IDS) {
+      const sk = buildSkull(getModel({ speciesId: id }).params.skull);
+      for (const [name, sdf, box] of [['cranium', sk.cranium, sk.bounds.cranium], ['mandible', sk.mandible, sk.bounds.mandible]] as const) {
+        const { min, max } = box;
+        const steps = 10;
+        for (let i = 0; i <= steps; i++) {
+          const u = i / steps;
+          for (let j = 0; j <= steps; j++) {
+            const v = j / steps;
+            const x = min[0] + (max[0] - min[0]) * u, y = min[1] + (max[1] - min[1]) * u, z = min[2] + (max[2] - min[2]) * v;
+            const y2 = min[1] + (max[1] - min[1]) * v, x2 = min[0] + (max[0] - min[0]) * v;
+            if (sdf(min[0], y, z) <= 0 || sdf(max[0], y, z) <= 0 || sdf(x, min[1], z) <= 0 || sdf(x, max[1], z) <= 0 || sdf(x2, y2, min[2]) <= 0 || sdf(x2, y2, max[2]) <= 0) {
+              violations.push(`${id}:${name}`);
+              i = steps + 1;
+              break;
+            }
+          }
+        }
+      }
+    }
+    expect(violations).toEqual([]);
+
+    const { buildBone } = await import('../src/sdf/build');
+    const { meshSDF } = await import('../src/mesher/surfaceNets');
+    const clipped: Array<{ id: string; boneId: string; openBoundaryEdges: number }> = [];
+    for (const id of ['paranthropus-boisei', 'paranthropus-robustus', 'homo-habilis', 'denisovans', 'homo-sapiens'] as const) {
+      for (const boneId of ['cranium', 'mandible'] as const) {
+        const b = buildBone({ speciesId: id, boneId, quality: 'lineup', lesions: [], healingT: 1 });
+        const m = meshSDF(b.sdf, b.bounds, { voxel: b.voxel });
+        const edges = new Map<string, number>();
+        for (let i = 0; i < m.indices.length; i += 3) {
+          for (let k = 0; k < 3; k++) {
+            const u = m.indices[i + k], v = m.indices[i + ((k + 1) % 3)];
+            const key = u < v ? `${u}_${v}` : `${v}_${u}`;
+            edges.set(key, (edges.get(key) ?? 0) + 1);
+          }
+        }
+        let openBoundaryEdges = 0;
+        for (const c of edges.values()) if (c === 1) openBoundaryEdges++;
+        if (openBoundaryEdges > 0) clipped.push({ id, boneId, openBoundaryEdges });
+      }
+    }
+    expect(clipped).toEqual([]);
+  });
 });
+
 
