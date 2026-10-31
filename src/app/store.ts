@@ -8,6 +8,7 @@
  * No secrets or personal data are stored.
  */
 import { LANG_CODES, SPECIES_IDS, type Audience, type LangCode, type SpeciesId } from '../data/types';
+import type { PhylogenyHypothesisId } from '../data/phylogeny';
 import type { BoneId } from '../anatomy/bones';
 
 export type RenderMode = 'fossil' | 'bone' | 'xray';
@@ -27,6 +28,7 @@ export interface AppState {
   showReconstructed: boolean;
   autoRotate: boolean;
   panel: Panel;
+  phylogenyHypothesis: PhylogenyHypothesisId;
   compareSpeciesId: SpeciesId | null;
   compareMode: CompareMode;
   /** 0 = species A, 1 = species B (morph mode). */
@@ -55,6 +57,7 @@ export const DEFAULT_STATE: AppState = {
   showReconstructed: true,
   autoRotate: true,
   panel: 'overview',
+  phylogenyHypothesis: 'consensus',
   compareSpeciesId: null,
   compareMode: 'side-by-side',
   morphT: 0,
@@ -81,6 +84,8 @@ const MUST_PERSIST: { [K in keyof AppState]?: (v: unknown) => v is AppState[K] }
   showFlesh: (v): v is boolean => typeof v === 'boolean',
   showReconstructed: (v): v is boolean => typeof v === 'boolean',
   autoRotate: (v): v is boolean => typeof v === 'boolean',
+  phylogenyHypothesis: (v): v is PhylogenyHypothesisId =>
+    v === 'consensus' || v === 'sediba-homo' || v === 'antecessor-lca',
   quizBest: (v): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 1000,
   badges: (v): v is string[] =>
     Array.isArray(v) && v.length <= 64 && v.every((b) => typeof b === 'string' && /^[a-z0-9-]{1,40}$/.test(b)),

@@ -2,7 +2,7 @@
 
 **Live App:** [https://hominin-atlas.web.app](https://hominin-atlas.web.app)
 
-An offline-first, zero-network interactive 3D web atlas of human evolution built for **curious kids (ages 7–14)** and **clinicians / osteologists**. Explore 17 hominin and hominid taxa across 7 million years, inspect 40 catalogued fossil specimens, click 24 paleopathological fractures and bone lesions sculpted directly into the 3D osteological meshes, and scrub a fracture-healing timeline from the moment of injury to the fossil as discovered.
+An offline-first, zero-network interactive 3D web atlas of human evolution built for **curious kids (ages 7–14)** and **clinicians / osteologists**. Explore 21 hominin and hominid taxa across 7 million years, inspect 47 catalogued fossil specimens, click 31 paleopathological fractures and bone lesions sculpted directly into the 3D osteological meshes, compare 3 competing phylogenetic topologies, load bundled CC0 Smithsonian 3D scans, and scrub a fracture-healing timeline from the moment of injury to the fossil as discovered.
 
 ## Quick Start
 
@@ -22,22 +22,23 @@ Deep links (validated against strict allow-lists on load and updated via `histor
 - `?species=homo-neanderthalensis&audience=clinician&panel=injuries&lesion=shanidar-1-left-orbit`
 - `?species=homo-floresiensis&audience=kids&mode=bone&frame=skull`
 - `?species=australopithecus-afarensis&compare=homo-sapiens&cmode=side-by-side`
-- `?species=homo-neanderthalensis&lang=ar` (supports `en`, `ar`, `de`, `nl`, `es`, `fr`, `it`, `pt`, `zh`, `yue`, `ja`, `ko`)
+- `?species=homo-neanderthalensis&lang=es-419` (supports `en`, `ar`, `de`, `nl`, `es`, `es-419`, `fr`, `it`, `pt`, `zh`, `yue`, `ja`, `ko`)
 - `?species=homo-sapiens&lineup=1`
 
 ## Dataset at a Glance
 
 | Collection | Count | Source / Location |
 |---|---:|---|
-| Taxa (`SPECIES_IDS`) | **17** | [`src/data/species/`](src/data/species/index.ts) — *S. tchadensis*, *Ar. ramidus*, *Au. afarensis*, *Au. africanus*, *Au. sediba*, *P. boisei*, *P. robustus*, *H. habilis*, *H. erectus*, *H. heidelbergensis*, *H. naledi*, *H. floresiensis*, *H. luzonensis*, *Denisovans*, *H. neanderthalensis*, *H. sapiens*, plus living outgroup *Pan troglodytes* |
-| Catalogued fossil specimens | **40** | Flagship + secondary specimens with museum accession codes, discovery coordinates, taphonomic palettes, and per-bone completeness (`found` / `partial` / `reconstructed`) |
-| Paleopathological lesions | **24** | Fractures, antemortem callus, cranial depression trauma, sharp-force/projectile injuries, hypervitaminosis A / periostitis, osteoma, fibrous dysplasia, and alveolar resorption |
-| Supported languages (`LANG_CODES`) | **12** | [`src/i18n/`](src/i18n/index.ts) — English (`en`), Arabic (`ar`, RTL), German (`de`), Dutch (`nl`), Spanish (`es`), French (`fr`), Italian (`it`), Portuguese (`pt`), Simplified Chinese (`zh`), Cantonese (`yue`), Japanese (`ja`), and Korean (`ko`) |
-| Chirp 3 HD studio narrations | **984** | [`public/audio/`](public/audio/) — Pre-synthesized Google Cloud **Chirp 3 HD (`Aoede`)** studio MP3s across all 12 languages for both Kids and Clinician modes (all 17 species + 24 lesions), with localized Web Speech fallback |
-| Primary-literature citations | **150** | [`src/data/citations.ts`](src/data/citations.ts) (94 with Crossref DOIs, 56 with Scholar title-search links) |
+| Taxa (`SPECIES_IDS`) | **21** | [`src/data/species/`](src/data/species/index.ts) — *S. tchadensis*, *O. tugenensis*, *Ar. ramidus*, *Au. anamensis*, *Au. afarensis*, *Au. africanus*, *Au. sediba*, *P. boisei*, *P. robustus*, *H. habilis*, *H. erectus*, *H. antecessor*, *H. heidelbergensis*, *H. naledi*, *H. floresiensis*, *H. luzonensis*, *Denisovans*, *H. neanderthalensis*, *H. sapiens*, plus living outgroups *Pan troglodytes* & *Pan paniscus* |
+| Catalogued fossil specimens | **47** | Flagship + secondary specimens with museum accession codes, discovery coordinates, taphonomic palettes, and per-bone completeness (`found` / `partial` / `reconstructed`) |
+| Paleopathological lesions | **31** | Fractures, antemortem callus, cranial depression trauma, cut-mark & carnivore taphonomy, hypervitaminosis A / periostitis, osteoid osteoma, axial dysplasia, and complete edentulous alveolar resorption, paired with a 3-state forensic differential comparator |
+| Supported languages (`LANG_CODES`) | **13** | [`src/i18n/`](src/i18n/index.ts) — English (`en`), Arabic (`ar`, RTL), German (`de`), Dutch (`nl`), Spanish — Spain (`es`), Spanish — Latin America (`es-419`), French (`fr`), Italian (`it`), Portuguese (`pt`), Simplified Chinese (`zh`), Cantonese (`yue`), Japanese (`ja`), and Korean (`ko`) |
+| Chirp 3 HD studio narrations | **1,352** | [`public/audio/`](public/audio/) — Pre-synthesized Google Cloud **Chirp 3 HD (`Aoede`)** studio MP3s across all 13 languages (`es-ES` & `es-US` regional voices) for both Kids and Clinician modes (all 21 species + 31 lesions), with localized Web Speech fallback |
+| Primary-literature citations | **168** | [`src/data/citations.ts`](src/data/citations.ts) (100% Crossref-verified DOIs and archival publisher/museum URLs; zero Google Scholar search fallbacks) |
+| Bundled CC0 museum 3D scans | **4** | [`public/scans/`](public/scans/) & [`src/app/museumScans.ts`](src/app/museumScans.ts) — Smithsonian NMNH CC0 `.glb` crania, mandible & femur (*Pan troglodytes*, *Pan paniscus*, *Gorilla gorilla*) + MorphoSource / African Fossils links |
 | Dual-register glossary terms | **69** | [`src/data/glossary.ts`](src/data/glossary.ts) (`kids` + `clinician` definitions) |
 | Quiz questions | **44** | [`src/data/quiz.ts`](src/data/quiz.ts) (21 kids, 15 clinician, 8 both) |
-| Museum-grade portraits & 3D figures | **51** | [`public/portraits/`](public/portraits/), [`public/figures/`](public/figures/), [`public/reconstructions/`](public/reconstructions/) & [`docs/PORTRAITS.md`](docs/PORTRAITS.md) |
+| Museum-grade portraits & 3D figures | **84** | [`public/portraits/`](public/portraits/), [`public/figures/`](public/figures/), [`public/reconstructions/`](public/reconstructions/) (naturalistic pelage on all pre-Pleistocene hominins) & [`docs/PORTRAITS.md`](docs/PORTRAITS.md) |
 
 ## Architecture
 
@@ -51,21 +52,24 @@ src/
 │   ├── events.ts         # Typed EventBus decoupling UI and 3D WebGL viewer
 │   ├── url.ts            # Allow-listed URL query-string parser and serializer (?species, ?lang, ...)
 │   ├── analytics.ts      # Privacy-hardened GA4 telemetry (G-SV6BEEVQZX, host-gated)
+│   ├── museumScans.ts    # Bundled CC0 Smithsonian .glb scan loader & open-access 3D archive index
 │   └── scanFile.ts       # Magic-byte, extension, and size validation for local 3D scans
 ├── i18n/
 │   ├── index.ts          # Public localization & Chirp 3 HD clip path helpers
-│   ├── ui.ts             # 12-language UI chrome, RTL document direction & BCP-47/Chirp voice map
-│   └── catalog.ts        # 12-language species & paleopathology translations
+│   ├── ui.ts             # 13-language UI chrome, RTL document direction & BCP-47/Chirp voice map
+│   └── catalog.ts        # 13-language species & paleopathology translations
 ├── data/
 │   ├── types.ts          # Scientific schema (Measure, Lesion, Specimen, Species, Citation)
-│   ├── species/          # 17 per-taxon modules
-│   ├── citations.ts      # 150 bibliographic records
+│   ├── species/          # 21 per-taxon modules
+│   ├── ecology.ts        # Carbon-isotope (δ13C C3/C4) & Clark lithic Mode 1–4 synthesis
+│   ├── phylogeny.ts      # 3 competing phylogenetic topology hypotheses
+│   ├── citations.ts      # 168 DOI/publisher-verified bibliographic records
 │   ├── glossary.ts       # 69 osteological & paleopathological terms
 │   └── quiz.ts           # 44 dual-audience questions
 ├── mesher/
 │   └── surfaceNets.ts    # Narrow-Band Surface Nets isosurface extractor with AO, curvature & tags
 ├── morph/
-│   └── params.ts         # 17-taxon osteometric parameter vectors & continuous morph interpolation
+│   └── params.ts         # 21-taxon osteometric parameter vectors & continuous morph interpolation
 ├── sdf/
 │   ├── core.ts           # Signed distance primitives, smooth booleans, Bezier tubes, value noise
 │   ├── skull.ts          # Cranium, brow ridge, zygomatic arch, sagittal crest, mandible, dentition

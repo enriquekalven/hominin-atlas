@@ -149,9 +149,17 @@ try {
     ancLinks: document.querySelectorAll('.tree__svg .tree__anc').length,
     flowLinks: document.querySelectorAll('.tree__svg .tree__flow').length,
   }));
-  assert(treeCheckKids.nodeCount === 17, `Expected 17 species nodes in family tree, got ${treeCheckKids.nodeCount}`);
-  assert(treeCheckKids.ancLinks >= 10, `Expected >= 10 ancestry connectors in family tree, got ${treeCheckKids.ancLinks}`);
-  assert(treeCheckKids.flowLinks >= 3, `Expected >= 3 gene-flow arcs in family tree, got ${treeCheckKids.flowLinks}`);
+  assert(treeCheckKids.nodeCount === 21, `Expected 21 species nodes in family tree, got ${treeCheckKids.nodeCount}`);
+  assert(treeCheckKids.ancLinks >= 12, `Expected >= 12 ancestry connectors in family tree, got ${treeCheckKids.ancLinks}`);
+  assert(treeCheckKids.flowLinks >= 4, `Expected >= 4 gene-flow arcs in family tree, got ${treeCheckKids.flowLinks}`);
+  await page.click('#modal-root .phylo-bar [data-value="antecessor-lca"]');
+  await page.waitForTimeout(100);
+  const phyloCheck = await page.evaluate(() => ({
+    hyp: window.__atlas.getState().phylogenyHypothesis,
+    nodeCount: document.querySelectorAll('.tree__svg .tree__node').length,
+  }));
+  assert(phyloCheck.hyp === 'antecessor-lca', `Expected phylogenyHypothesis=antecessor-lca, got ${phyloCheck.hyp}`);
+  assert(phyloCheck.nodeCount === 21, `Expected 21 nodes after topology switch, got ${phyloCheck.nodeCount}`);
   if (shotDir) {
     await page.screenshot({ path: join(shotDir, '05_family_tree_kids.png') });
   }
@@ -159,7 +167,7 @@ try {
   await page.waitForTimeout(150);
 
   await page.evaluate(() => {
-    window.__atlas.setState({ audience: 'clinician', panel: 'tree', speciesId: 'homo-heidelbergensis' });
+    window.__atlas.setState({ audience: 'clinician', panel: 'tree', speciesId: 'homo-heidelbergensis', phylogenyHypothesis: 'consensus' });
   });
   await page.waitForTimeout(200);
   await page.click('button:has-text("Family tree")');
@@ -228,6 +236,22 @@ try {
   assert(deepLinkCheck.renderMode === 'bone', `Deep link renderMode mismatch: ${deepLinkCheck.renderMode}`);
   assert(deepLinkCheck.framing === 'skull', `Deep link framing mismatch: ${deepLinkCheck.framing}`);
 
+  // 9b. Test bundled CC0 Smithsonian 3D museum scan preset loading
+  await page.evaluate(() => {
+    window.__atlas.events.emit('scan:preset', { presetId: 'usnm-398227-mandible' });
+  });
+  await page.waitForFunction(
+    () => {
+      const chip = document.querySelector('.chip--scan');
+      return Boolean(chip && !chip.hasAttribute('hidden') && chip.textContent?.includes('USNM 398227'));
+    },
+    null,
+    { timeout: 10000 },
+  );
+  await page.evaluate(() => {
+    window.__atlas.events.emit('scan:clear', {});
+  });
+
   // 10. Verify Google Analytics 4 initialization (G-SV6BEEVQZX) and localhost beacon gating
   const gaCheck = await page.evaluate(() => ({
     measurementId: window.__homininAnalytics?.measurementId,
@@ -240,8 +264,8 @@ try {
   assert(gaCheck.hasDataLayer, 'Expected window.dataLayer to be initialized with gtag config');
   assert(gaCheck.gaDisabledOnLocalhost && !gaCheck.networkEnabled, 'Expected GA4 network beacons to be disabled on 127.0.0.1');
 
-  // 11. Verify Arabic (RTL), German, and Dutch localization + Chirp 3 HD studio MP3 read-aloud
-  for (const lang of ['ar', 'de', 'nl']) {
+  // 11. Verify Arabic (RTL), German, Dutch, and Spanish LatAm (es-419) localization + Chirp 3 HD studio MP3 read-aloud
+  for (const lang of ['ar', 'de', 'nl', 'es-419']) {
     await page.evaluate((code) => {
       window.__lastNarration = undefined;
       window.__atlas.setState({
@@ -285,7 +309,7 @@ try {
   }
 
   assert(errors.length === 0, `Unexpected browser errors:\n${errors.join('\n')}`);
-  console.log('[smoke] PASS — all WebGL viewer, hotspot, comparison, family-tree, GPU lifelike shader, GA4, 12-language i18n, and Chirp 3 HD read-aloud checks succeeded with 0 errors.');
+  console.log('[smoke] PASS — all WebGL viewer, hotspot, comparison, 3-hypothesis phylogeny, museum CC0 scans, GPU lifelike shader, GA4, 13-language i18n (incl. es-419), and Chirp 3 HD read-aloud checks succeeded with 0 errors.');
 } finally {
   if (browser) await browser.close();
   await server.close();

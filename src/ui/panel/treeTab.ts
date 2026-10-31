@@ -2,12 +2,13 @@
  * Tree tab: where the current species sits in the family tree (parent, descendants,
  * interbreeding), with a button to open the full family-tree chart.
  */
+import { applyPhylogenyHypothesis } from '../../data';
 import type { Species } from '../../data/types';
 import type { UICtx } from '../context';
-import { currentSpecies } from '../context';
 import { button, h } from '../dom';
 import { icon } from '../icons';
 import { speciesDates } from '../format';
+import { renderPhylogenyBar } from '../phylogenyBar';
 import { emptyState, sectionTitle, taxon } from '../widgets';
 import { selectSpecies } from '../actions';
 import type { TabView } from './index';
@@ -20,10 +21,14 @@ export function createTreeTab(ctx: UICtx, openTree: () => void): TabView {
       () => selectSpecies(ctx, sp.id),
     );
   return {
-    key: (s) => `${s.speciesId}|${s.audience}`,
+    key: (s) => `${s.speciesId}|${s.audience}|${s.phylogenyHypothesis}`,
     render(pane) {
-      const sp = currentSpecies(ctx);
-      const kids = ctx.store.get().audience === 'kids';
+      const s = ctx.store.get();
+      const audience = s.audience;
+      const kids = audience === 'kids';
+      const modeled = applyPhylogenyHypothesis(ctx.species, s.phylogenyHypothesis);
+      const modeledMap = new Map(modeled.map((x) => [x.id, x] as const));
+      const sp = modeledMap.get(s.speciesId);
       const open = button([icon('tree'), h('span', { class: 'btn__label' }, kids ? 'Open the family tree' : 'Open phylogeny chart')], {
         class: 'btn btn--primary',
       }, openTree);
@@ -31,13 +36,12 @@ export function createTreeTab(ctx: UICtx, openTree: () => void): TabView {
         pane.append(emptyState('No species selected', 'Pick a species to see where it fits.'), open);
         return;
       }
-      const parent = sp.ancestry.parent ? ctx.byId.get(sp.ancestry.parent) : undefined;
-      const children = ctx.species.filter((x) => x.ancestry.parent === sp.id);
-      // Gene flow may be recorded on either partner; show it from both sides.
-      const flow = ctx.species.filter((x) => x.id !== sp.id && (sp.geneFlow.includes(x.id) || x.geneFlow.includes(sp.id)));
+      const parent = sp.ancestry.parent ? modeledMap.get(sp.ancestry.parent) : undefined;
+      const children = modeled.filter((x) => x.ancestry.parent === sp.id);
+      const flow = modeled.filter((x) => x.id !== sp.id && (sp.geneFlow.includes(x.id) || x.geneFlow.includes(sp.id)));
       const flowLabel = kids ? 'Interbred with' : 'Introgression with';
 
-      pane.append(sectionTitle('h3', kids ? 'Family connections' : 'Phylogenetic position'));
+      pane.append(sectionTitle('h3', kids ? 'Family connections' : 'Phylogenetic position'), renderPhylogenyBar(ctx, audience));
       const dl = h('dl', { class: 'facts' });
       dl.append(
         h('dt', null, kids ? 'Came from' : 'Proposed ancestor'),
@@ -48,7 +52,7 @@ export function createTreeTab(ctx: UICtx, openTree: () => void): TabView {
             ? [link(parent, kids), sp.ancestry.uncertain ? h('span', { class: 'tag tag--uncertain' }, kids ? 'Not sure' : 'Uncertain') : null]
             : kids
               ? 'Scientists do not know yet.'
-              : 'Unresolved / not in this atlas',
+              : 'Unresolved / basal outgroup',
         ),
         h('dt', null, kids ? 'Led to' : 'Proposed descendants'),
         h('dd', null, children.length ? h('div', { class: 'chips' }, children.map((c) => link(c, kids))) : '—'),

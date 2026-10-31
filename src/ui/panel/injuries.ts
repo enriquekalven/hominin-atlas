@@ -14,6 +14,7 @@ import { pick } from '../labels';
 import { emptyState, evidenceBadge, sectionTitle } from '../widgets';
 import { selectLesion, selectSpecimen } from '../actions';
 import { renderLesionDetail } from './lesionDetail';
+import { renderTaphonomyGuide } from './taphonomyGuide';
 import type { TabView } from './index';
 
 function specimenLabel(sp: Specimen, kids: boolean): string {
@@ -120,6 +121,7 @@ export function createInjuriesTab(ctx: UICtx): TabView {
       }
       const others = otherSpecimens(ctx, sp, spec, kids);
       if (others) pane.appendChild(others);
+      pane.appendChild(renderTaphonomyGuide(ctx, kids));
     },
   };
 }

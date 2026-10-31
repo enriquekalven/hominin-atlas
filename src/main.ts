@@ -1,5 +1,6 @@
 import { bindAnalytics } from './app/analytics';
 import { createEventBus } from './app/events';
+import { mountMuseumScans } from './app/museumScans';
 import { createStore, loadPersisted } from './app/store';
 import { parseUrlQuery, syncUrlWithStore } from './app/url';
 import { SPECIES } from './data';
@@ -37,6 +38,7 @@ function boot(): void {
   applyDocumentLang(store.get().lang);
   syncUrlWithStore(store);
   bindAnalytics(store, events);
+  mountMuseumScans(events);
 
   mountUI({ store, events, species: SPECIES });
 

@@ -2,6 +2,7 @@
  * Overview tab: full skin-and-attire life reconstruction + close-up portrait switcher, Chirp 3 HD read-aloud,
  * localized overview text, key stats, traits, fun facts (kids), lifestyle and (clinician) sources.
  */
+import { PALEOECOLOGY } from '../../data';
 import type { Audience, LangCode, Species } from '../../data/types';
 import { localizedSpecies, uiText, type LocalizedSpeciesEntry } from '../../i18n';
 import type { UICtx } from '../context';
@@ -35,8 +36,9 @@ function statsTable(sp: Species, audience: Audience, lang: LangCode): HTMLTableE
   );
 }
 
-function lifestyle(loc: LocalizedSpeciesEntry, audience: Audience, lang: LangCode, attireNote: string): HTMLElement {
+function lifestyle(sp: Species, loc: LocalizedSpeciesEntry, audience: Audience, lang: LangCode, attireNote: string): HTMLElement {
   const t = uiText(lang);
+  const eco = PALEOECOLOGY[sp.id];
   const item = (label: string, text: string) => [h('dt', null, label), h('dd', null, text || DASH)];
   return h(
     'dl',
@@ -44,7 +46,9 @@ function lifestyle(loc: LocalizedSpeciesEntry, audience: Audience, lang: LangCod
     item(pick(t.skinAttireLabel, audience), attireNote),
     item(pick(t.locomotion, audience), pick(loc.locomotion, audience)),
     item(pick(t.diet, audience), pick(loc.diet, audience)),
+    item(audience === 'kids' ? 'Tooth-chemistry diet clue' : 'Isotopic diet (δ¹³C / δ¹⁵N)', pick(eco.dietIsotope, audience)),
     item(pick(t.technology, audience), pick(loc.technology, audience)),
+    item(audience === 'kids' ? 'Tool-kit stage' : 'Lithic mode (Clark 0–5)', pick(eco.lithicMode, audience)),
   );
 }
 
@@ -143,7 +147,7 @@ export function createOverviewTab(ctx: UICtx): TabView {
           ? h('section', { class: 'funfacts' }, sectionTitle('h3', t.funFacts), h('ul', { class: 'bullets' }, loc.funFacts.map((f) => h('li', null, f))))
           : null,
         sectionTitle('h3', pick(t.dailyLifeAttire, audience)),
-        lifestyle(loc, audience, lang, attireNote),
+        lifestyle(sp, loc, audience, lang, attireNote),
         !kids ? renderCitations(sp.citations) : null,
       ]);
     },

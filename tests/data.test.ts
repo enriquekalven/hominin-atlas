@@ -4,11 +4,22 @@
 import { describe, expect, it } from 'vitest';
 import { isBoneId, isBoneRef } from '../src/anatomy/bones';
 import { anchorsForBone, isValidFdi } from '../src/anatomy/sites';
-import { CITATION_MAP, GLOSSARY, QUIZ, SPECIES, citationHref, flagshipSpecimen } from '../src/data';
+import {
+  CITATION_MAP,
+  GLOSSARY,
+  PALEOECOLOGY,
+  PHYLOGENY_HYPOTHESES,
+  QUIZ,
+  SPECIES,
+  applyPhylogenyHypothesis,
+  citationHref,
+  flagshipSpecimen,
+} from '../src/data';
 import { SPECIES_IDS } from '../src/data/types';
 
 describe('Hominin Atlas scientific dataset', () => {
-  it('covers all 17 canonical SPECIES_IDS with unique ids', () => {
+  it('covers all 21 canonical SPECIES_IDS with unique ids', () => {
+    expect(SPECIES_IDS.length).toBe(21);
     const ids = SPECIES.map((s) => s.id);
     expect(new Set(ids).size).toBe(SPECIES_IDS.length);
     for (const id of SPECIES_IDS) {
@@ -82,6 +93,37 @@ describe('Hominin Atlas scientific dataset', () => {
             expect(c, `missing citation ${cid} on lesion ${l.id}`).toBeDefined();
             expect(citationHref(c!)).not.toBeNull();
           }
+        }
+      }
+    }
+  });
+
+  it('enforces 100% DOI / archival publisher URLs (zero Google Scholar search links), paleoecology, and acyclic phylogenies', () => {
+    for (const [, c] of CITATION_MAP) {
+      const href = citationHref(c);
+      expect(href, `citation ${c.id} missing valid href`).not.toBeNull();
+      expect(href!).not.toContain('scholar.google.com');
+    }
+
+    for (const sp of SPECIES) {
+      const eco = PALEOECOLOGY[sp.id];
+      expect(eco, `missing paleoecology for ${sp.id}`).toBeDefined();
+      expect(eco.dietIsotope.clinician.length).toBeGreaterThan(8);
+      expect(eco.lithicMode.clinician.length).toBeGreaterThan(8);
+    }
+
+    for (const hyp of PHYLOGENY_HYPOTHESES) {
+      const modeled = applyPhylogenyHypothesis(SPECIES, hyp.id);
+      const byId = new Map(modeled.map((s) => [s.id, s]));
+      for (const sp of modeled) {
+        const seen = new Set<string>([sp.id]);
+        let cur = sp.ancestry.parent;
+        while (cur) {
+          expect(seen.has(cur), `cycle in ${hyp.id} starting at ${sp.id}`).toBe(false);
+          seen.add(cur);
+          const parentSp = byId.get(cur);
+          expect(parentSp, `unknown parent ${cur} in ${hyp.id}`).toBeDefined();
+          cur = parentSp!.ancestry.parent;
         }
       }
     }

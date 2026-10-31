@@ -28,6 +28,9 @@ export interface EventMap {
   /** UI -> Viewer: a validated local 3D scan file to display (never uploaded anywhere). */
   'scan:load': { name: string; format: ScanFormat; buffer: ArrayBuffer };
   'scan:clear': Record<string, never>;
+  /** UI -> App: load a bundled CC0 museum scan preset from /scans/*.glb. */
+  'scan:preset': { presetId: string };
+  'scan:preset-error': { message: string };
   /** UI -> Viewer: start / stop the "chomp" or walking demo animation (kids mode). */
   'ui:animate': { kind: 'chomp' | 'walk' | 'none' };
   /** UI -> Analytics: read-aloud audio started (Chirp 3 HD studio clip or browser fallback). */

@@ -79,10 +79,43 @@ export const species: Species = {
           'Juvenile male partial skeleton with a nearly complete cranium (endocranial volume ~420 cm³) and mandible, found with the adult female MH2 in a collapsed cave deposit; both appear to have been deposited at about the same time.',
       },
       taphonomy: { colors: ['#c9b59a', '#a58c6c', '#5a4632'], note: 'Light brown bone partly encased in hard, calcified cave sediment.' },
-      lesions: [],
-      citations: ['berger2010', 'pickering2011', 'carlson2011'],
+      lesions: [
+        {
+          id: 'mh1-t6-osteoid-osteoma',
+          kind: 'tumor',
+          bone: 'vert_T6',
+          site: { anchor: 'lamina' },
+          timing: 'antemortem',
+          healing: null,
+          title: {
+            kids: 'Tiny benign bone tumor on a mid-back bone',
+            clinician: 'Benign osteoid osteoma on the right lamina of the 6th thoracic vertebra',
+          },
+          summary: {
+            kids: 'High-tech X-ray scans found a small, non-cancerous bone lump on Karabo’s middle back—one of the oldest bone tumors ever discovered in our family tree!',
+            clinician:
+              'Synchrotron micro-CT revealed a circumscribed 6.7 × 5.9 mm radiolucent nidus with surrounding reactive sclerosis penetrating the right lamina of T6 without neural-canal compromise, diagnostic of a benign osteoid osteoma (Randolph-Quinney et al. 2016).',
+          },
+          clinical: {
+            morphology: 'Well-demarcated lytic cortical/trabecular nidus (~6 mm) on the dorsal right lamina of T6 bordered by a rim of osteoblastic sclerosis.',
+            differential: [
+              'Benign osteoid osteoma (favoured by nidus size <15 mm and sclerotic margin)',
+              'Osteoblastoma (typically >15–20 mm and more expansile)',
+              'Brodie abscess / focal chronic osteomyelitis',
+            ],
+            modernAnalogue: 'Pediatric/adolescent vertebral lamina osteoid osteoma (classically causing nocturnal dull back ache and potential painful scoliosis).',
+            functionalImpact: 'Likely localized mid-thoracic pain and possible muscle spasm during climbing or scapular movement; no spinal cord compression.',
+            survivalInterval: 'Chronic benign lesion active at time of death.',
+          },
+          evidence: 'established',
+          debateNote: null,
+          citations: ['randolphquinney2016'],
+          render: { severity: 0.45, radiusMm: 6 },
+        },
+      ],
+      citations: ['berger2010', 'pickering2011', 'carlson2011', 'randolphquinney2016'],
       isFlagship: true,
     },
   ],
-  citations: ['berger2010', 'pickering2011', 'carlson2011'],
+  citations: ['berger2010', 'pickering2011', 'carlson2011', 'randolphquinney2016'],
 };

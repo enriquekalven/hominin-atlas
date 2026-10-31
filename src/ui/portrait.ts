@@ -1,5 +1,5 @@
 /**
- * Species portraits and full-attire life reconstructions (AI-generated museum paleoart impressions)
+ * Species portraits and full-body life reconstructions (AI-generated museum paleoart impressions)
  * with graceful monogram fallback when an image is missing or fails to decode.
  */
 import type { Audience, DualText, Species, SpeciesId } from '../data/types';
@@ -23,69 +23,85 @@ export const ATTIRE_SUMMARY: Record<SpeciesId, DualText> = {
     kids: 'Living chimpanzee with coarse black fur, bare mottled face skin, and a peeled twig tool for fishing termites.',
     clinician: 'Living outgroup reference: dense dark pelage, mottled facial pigmentation, and unmodified organic foraging tools (no clothing).',
   },
+  'pan-paniscus': {
+    kids: 'Living bonobo with slender limbs, black fur, dark face skin from birth, pink lips, and parted head hair.',
+    clinician: 'Living sister outgroup: gracile build, black pelage with parted crown hair, dark facial epidermis, and no material clothing.',
+  },
   'sahelanthropus-tchadensis': {
-    kids: 'Covered in thick dark ape-like hair to stay warm and shaded by Lake Chad, shown with a simple woven reed waist wrap.',
-    clinician: 'Speculative soft tissue: dense hominid pelage and dark skin; shown with a hypothetical lakeside sedge-reed waist wrap for modesty.',
+    kids: 'Covered in thick dark ape-like body hair with dark facial skin beside ancient Lake Chad—million of years before clothes existed.',
+    clinician: 'Naturalistic Late Miocene hominid pelage and dark epidermis; zero clothing or textiles (none existed at ~7 Ma).',
+  },
+  'orrorin-tugenensis': {
+    kids: 'Covered in dark woodland fur for shade and warmth in ancient Kenyan forests, walking upright with bare feet and no clothing.',
+    clinician: 'Naturalistic ~6 Ma hominid pelage over bipedal hindlimbs and climbing forelimbs; zero clothing or woven materials.',
   },
   'ardipithecus-ramidus': {
-    kids: 'Thick woodland fur cover with dark skin, shown wearing a simple woven bark-and-vine waist band while holding a fig branch.',
-    clinician: 'Woodland hominin pelage reconstruction; no archaeological clothing attested at 4.4 Ma (bark-strip waist band is artistic).',
+    kids: 'Thick woodland fur coat with dark skin and grasping feet while holding a wild fig branch—no clothing.',
+    clinician: 'Naturalistic Pliocene woodland hominin pelage (~4.4 Ma) with opposable hallux and zero clothing artifacts.',
+  },
+  'australopithecus-anamensis': {
+    kids: 'Dark skin with thick brown-black body fur suited to riverside woods near ancient Lake Turkana, with no clothing.',
+    clinician: 'Naturalistic ~4.2–3.8 Ma australopith pelage and dark tropical epidermis without anachronistic clothing.',
   },
   'australopithecus-afarensis': {
-    kids: 'Lucy had dark skin and short brown body hair, shown with a woven savanna-grass and hide waist wrap and a wooden digging stick.',
-    clinician: 'Retained archaic body hair with dark tropical epidermis; woven grass/hide waist wrap is an artistic modesty convention (no 3.2 Ma textiles).',
+    kids: 'Lucy had dark skin and natural brown-black body hair across her shoulders, torso and limbs, carrying a simple wooden foraging stick.',
+    clinician: 'Naturalistic Plio-Pleistocene australopith pelage over dark tropical skin (zero woven textiles or leather wraps at ~3.2 Ma).',
   },
   'australopithecus-africanus': {
-    kids: 'Short brown hair over the shoulders and chest, wearing a simple sun-dried antelope hide wrap tied with twisted grass cord.',
-    clinician: 'Archaic pelage and medium-dark skin reconstruction; draped raw hide wrap is paleoartistic (no clothing evidence at 2.5 Ma).',
+    kids: 'Natural brown body hair over dark skin for warm days and cool South African nights, with no clothing.',
+    clinician: 'Naturalistic australopith pelage and medium-dark epidermis (~3.0–2.0 Ma); depicted without anachronistic clothing.',
   },
   'australopithecus-sediba': {
-    kids: 'Medium-brown skin with shorter body hair, wearing a braided grass and hide wrap around the waist.',
-    clinician: 'Transitional pelage density; braided plant-fiber and hide waist wrap is an artistic convention (Malapa ~1.98 Ma).',
+    kids: 'Shorter natural brown-black body hair over dark skin with long climbing arms and Homo-like hands, without clothing.',
+    clinician: 'Transitional mosaic pelage over dark epidermis (Malapa ~1.98 Ma); shown naturally unclothed per archaeological record.',
   },
   'paranthropus-boisei': {
-    kids: 'Strong shoulders with dark hair and skin, wearing a woven sedge-grass and hide wrap while carrying wetland papyrus roots.',
-    clinician: 'Megadont robust australopith with tall sagittal crest and archaic pelage; shown with C4 sedge tubers and speculative woven wrap.',
+    kids: 'Broad, powerful shoulders covered in natural dark hominid hair, carrying freshly pulled wetland papyrus and sedge roots.',
+    clinician: 'Megadont robust australopith with tall sagittal crest and natural dark pelage holding C4 sedge rhizomes (no clothing).',
   },
   'paranthropus-robustus': {
-    kids: 'Muscular build with short body hair, a simple hide wrap, and a polished bone digging tool used to dig up roots and termites.',
-    clinician: 'Archaic pelage with speculative hide wrap; holds an attested Swartkrans-type polished bone digging implement (Backwell & d’Errico 2001).',
+    kids: 'Muscular build with natural dark body hair and no clothing, holding a polished bone tool used to dig into termite mounds.',
+    clinician: 'Naturalistic archaic pelage (no clothing), holding an attested Swartkrans-type polished bone digging implement (Backwell & d’Errico 2001).',
   },
   'homo-habilis': {
-    kids: 'Lighter body hair than Lucy, wearing a simple gazelle hide draped over one shoulder and holding a sharp Oldowan stone chopper.',
-    clinician: 'Reduced body hair relative to australopiths; shown with Oldowan core/flake lithics and a speculative draped raw-hide mantle.',
+    kids: 'Thinner body hair than earlier relatives, shown with a simple scavenged hide over one shoulder and a sharp Oldowan stone flake.',
+    clinician: 'Reduced pelage relative to australopiths; holds attested Mode 1 Oldowan core/flake lithics (draped raw hide is speculative).',
   },
   'homo-erectus': {
-    kids: 'Tall, active runner with smooth dark brown skin for sweating in the hot sun, a leather shoulder sling, and a stone handaxe.',
-    clinician: 'Thermoregulatory bare dark skin with eccrine sweat adaptation (Jablonski 2004), Acheulean biface in hip pouch, and cured hide sling.',
+    kids: 'Tall, active runner with bare dark brown skin for cooling sweat in the hot sun, a simple hide carry strap, and a stone handaxe.',
+    clinician: 'Thermoregulatory bare dark skin with eccrine sweat adaptation, holding a Mode 2 Acheulean biface (hide carry strap is speculative).',
+  },
+  'homo-antecessor': {
+    kids: 'Draped in a heavy unsewn deer-hide cloak against cool Spanish winters while holding a sharp flint flake and wooden spear.',
+    clinician: 'Speculative unsewn cervid/equid raw-hide wrap for cool Early Pleistocene Iberia (~850 ka) with attested TD6 Mode 1 flint flake.',
   },
   'homo-heidelbergensis': {
-    kids: 'Wore a thick cured wild-horse hide cape tied with rawhide cord to stay warm and carried a wooden hunting spear.',
-    clinician: 'Draped Middle Pleistocene hide mantle (consistent with Schöningen hide-scraping lithic wear) and a fire-hardened spruce spear.',
+    kids: 'Wore a thick scraped wild-horse hide cape to stay warm in Ice Age Europe and carried a fire-hardened wooden hunting spear.',
+    clinician: 'Draped Middle Pleistocene hide mantle (consistent with Boxgrove/Schöningen hide-scraping microwear) and attested spruce spear.',
   },
   'homo-neanderthalensis': {
-    kids: 'Dressed for Ice Age cold in a scraped reindeer-hide tunic, a thick wolf-fur cloak fastened with a bone pin, and forearm wraps.',
-    clinician: ' scraped reindeer/deer hide tunic, wolf-fur mantle with bone pin, and Mousterian spear; supported by lissoir bone smoothers and lithic hide polish.',
+    kids: 'Dressed for Ice Age cold in a scraped reindeer-hide tunic, a thick wolf-fur cloak, and a hafted Mousterian stone-tipped spear.',
+    clinician: 'Scraped cervid-hide tunic and fur mantle supported by lissoir bone smoothers, lithic hide polish, and birch-tar hafted Mode 3 spears.',
   },
-  'denisovans': {
+  denisovans: {
     kids: 'Bundled in a warm steppe-bison fur coat sewn with bone awls, braided leather ties, and a polished green stone bracelet.',
-    clinician: 'Heavy bison/wolf fur parka sewn with bone awls and an attested Denisova Cave polished green chlorite bracelet (Derevianko et al. 2008).',
+    clinician: 'Heavy bison/wolf fur parka sewn with bone awls and an attested Denisova Cave polished green chlorite bracelet.',
   },
   'homo-floresiensis': {
-    kids: 'Tiny island human wearing a beaten tree-bark cloth and woven pandanus-fiber shoulder wrap while holding a stone blade.',
-    clinician: 'Diminutive 1.06 m stature; shown with speculative tropical beaten bark-cloth / pandanus wrap and attested Liang Bua chert blade.',
+    kids: 'Tiny 1-metre-tall island human with dark tropical skin and light body hair, holding a flaked volcanic stone tool.',
+    clinician: 'Diminutive ~1.06 m insular hominin with tropical epidermis and attested Liang Bua radial chert/tuff flake.',
   },
   'homo-luzonensis': {
-    kids: 'Small island human wearing a woven rattan and bark-cloth shoulder wrap and holding a flaked stone tool.',
-    clinician: 'Speculative cranial and soft-tissue reconstruction (known from teeth/postcrania); shown with hypothetical tropical bark-cloth wrap.',
+    kids: 'Small tropical island human with dark skin and climbing-capable hands and feet, holding a simple flaked stone tool.',
+    clinician: 'Speculative cranial and soft-tissue reconstruction (known from Callao Cave dentition and phalanges/metatarsals).',
   },
   'homo-naledi': {
-    kids: 'Slender build with dark skin and curly hair, wearing a simple springbok hide draped over one shoulder and tied at the waist.',
-    clinician: 'Small-brained ~300 ka hominin (LES1 cranium); draped bovid-hide wrap is an artistic convention (no clothing artifacts in Rising Star).',
+    kids: 'Slender, athletic build with dark skin and short curly hair, shown exploring the dark Rising Star cave system.',
+    clinician: 'Small-brained ~300 ka hominin (LES1 cranium) with bare dark epidermis; no clothing or lithics attested in Rising Star.',
   },
   'homo-sapiens': {
-    kids: 'Wearing a finely sewn buckskin tunic stitched with bone needles, a warm fox-fur collar, a woven belt, and seashell beads.',
-    clinician: 'Upper Paleolithic tailored hide tunic (eyed bone needles), arctic fox mantle, twined fiber belt, and perforated marine shell / ochre beads.',
+    kids: 'Wearing a finely sewn buckskin tunic stitched with eyed bone needles, a warm fox-fur collar, a twined belt, and seashell beads.',
+    clinician: 'Upper Paleolithic tailored hide tunic (eyed bone needles), fox-fur mantle, twined fiber belt, and perforated marine shell beads.',
   },
 };
 
@@ -115,7 +131,7 @@ export function reconstruction(sp: Pick<Species, 'id' | 'binomial' | 'common'>, 
 export function openLifeDialog(sp: Species, audience: Audience): void {
   const note = pick(ATTIRE_SUMMARY[sp.id], audience);
   openDialog({
-    title: `${sp.common.kids} (${sp.binomial}) — Skin & Attire Reconstruction`,
+    title: `${sp.common.kids} (${sp.binomial}) — Skin & Pelage Reconstruction`,
     className: 'dialog--wide',
     description: PORTRAIT_CAPTION,
     build(body, handle) {
@@ -126,8 +142,8 @@ export function openLifeDialog(sp: Species, audience: Audience): void {
           h(
             'figure',
             { class: 'life-modal__fig' },
-            reconstruction(sp, 'portrait--modal-recon', `Full life reconstruction of ${sp.common.kids} with skin and attire`),
-            h('figcaption', { class: 'life-modal__cap' }, 'Three-quarter life reconstruction with skin, hair/pelage & attire'),
+            reconstruction(sp, 'portrait--modal-recon', `Full life reconstruction of ${sp.common.kids}`),
+            h('figcaption', { class: 'life-modal__cap' }, 'Three-quarter museum life reconstruction (skin, pelage & material culture)'),
           ),
           h(
             'figure',

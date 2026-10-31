@@ -56,7 +56,7 @@ export const species: Species = {
     uncertain: false,
     note: 'Living outgroup. Chimpanzees are not ancestral to hominins; both lineages descend from a shared ancestor that lived roughly 6–8 million years ago.',
   },
-  geneFlow: [],
+  geneFlow: ['pan-paniscus'],
   specimens: [
     {
       id: 'gombe-chimpanzee-collection',

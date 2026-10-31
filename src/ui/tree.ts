@@ -2,13 +2,15 @@
  * Family-tree dialog: the SVG range chart, a legend, and a nested ordered-list version of the
  * same tree for screen readers. Picking a species selects it and closes the dialog.
  */
+import { applyPhylogenyHypothesis, type PhylogenyHypothesisId } from '../data';
 import type { Audience, Species, SpeciesId } from '../data/types';
 import type { UICtx } from './context';
-import { h } from './dom';
+import { h, setChildren } from './dom';
 import { openDialog } from './dialogs';
 import { speciesDates, speciesName } from './format';
 import { layoutTree, type TreeLayout } from './treeLayout';
 import { treeChart } from './treeChart';
+import { renderPhylogenyBar } from './phylogenyBar';
 import { emptyState } from './widgets';
 import { selectSpecies } from './actions';
 
@@ -62,24 +64,33 @@ export function openTreeDialog(ctx: UICtx): void {
     title: kids ? 'Our family tree' : 'Hominin phylogeny (time-scaled)',
     className: 'dialog--wide',
     description: kids
-      ? 'Older relatives are at the top. Tap a name to explore it.'
-      : 'Columns are taxa; bars show first and last appearance on a log time axis. Select a column to open that taxon.',
+      ? 'Older relatives are at the top. Switch models to see how scientists debate our family tree!'
+      : 'Columns are taxa; bars show first and last appearance on a log time axis. Toggle competing topologies below.',
     build(body, handle) {
       if (ctx.species.length === 0) {
         body.appendChild(emptyState('The family tree is still growing', 'Species will appear here once the data is added.'));
         return;
       }
-      const layout = layoutTree(ctx.species);
+      const srMount = h('div');
+      const scroll = h('div', { class: 'tree__scroll' });
       const pickSpecies = (id: SpeciesId) => {
         selectSpecies(ctx, id);
         handle.close();
       };
-      const chart = treeChart(layout, ctx.byId, audience, ctx.store.get().speciesId, pickSpecies);
+      const renderTopology = (hypId: PhylogenyHypothesisId) => {
+        const modeled = applyPhylogenyHypothesis(ctx.species, hypId);
+        const modeledMap = new Map(modeled.map((s) => [s.id, s] as const));
+        const layout = layoutTree(modeled);
+        setChildren(srMount, textTree(layout, modeledMap, audience));
+        setChildren(scroll, treeChart(layout, modeledMap, audience, ctx.store.get().speciesId, pickSpecies));
+      };
+      renderTopology(ctx.store.get().phylogenyHypothesis);
       const legendItem = (cls: string, text: string) =>
         h('li', null, h('span', { class: `legend__swatch ${cls}`, 'aria-hidden': 'true' }), text);
       body.append(
-        textTree(layout, ctx.byId, audience),
-        h('div', { class: 'tree__scroll' }, chart),
+        renderPhylogenyBar(ctx, audience, renderTopology),
+        srMount,
+        scroll,
         h(
           'ul',
           { class: 'legend' },
@@ -92,8 +103,8 @@ export function openTreeDialog(ctx: UICtx): void {
           'p',
           { class: 'note' },
           kids
-            ? 'Scientists keep finding new fossils, so this tree can change!'
-            : 'Ancestor–descendant links are hypotheses; dashed links are contested. Ages of 1 ka and younger are drawn at the bottom edge.',
+            ? 'Scientists keep finding new fossils and ancient proteins, so this tree can change!'
+            : 'Ancestor–descendant links are testable hypotheses; dashed links are contested. Ages of 1 ka and younger sit on the bottom edge.',
         ),
       );
       queueMicrotask(() => body.querySelector<SVGElement>('.tree__node.is-selected')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }));

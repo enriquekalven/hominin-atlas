@@ -14,7 +14,7 @@ import type { LesionSite } from '../anatomy/sites';
 
 export type Audience = 'kids' | 'clinician';
 
-export const LANG_CODES = ['en', 'ar', 'de', 'nl', 'es', 'fr', 'it', 'pt', 'zh', 'yue', 'ja', 'ko'] as const;
+export const LANG_CODES = ['en', 'ar', 'de', 'nl', 'es', 'es-419', 'fr', 'it', 'pt', 'zh', 'yue', 'ja', 'ko'] as const;
 export type LangCode = (typeof LANG_CODES)[number];
 
 export interface DualText {
@@ -24,8 +24,11 @@ export interface DualText {
 
 export type SpeciesId =
   | 'pan-troglodytes'
+  | 'pan-paniscus'
   | 'sahelanthropus-tchadensis'
+  | 'orrorin-tugenensis'
   | 'ardipithecus-ramidus'
+  | 'australopithecus-anamensis'
   | 'australopithecus-afarensis'
   | 'australopithecus-africanus'
   | 'australopithecus-sediba'
@@ -33,6 +36,7 @@ export type SpeciesId =
   | 'paranthropus-robustus'
   | 'homo-habilis'
   | 'homo-erectus'
+  | 'homo-antecessor'
   | 'homo-heidelbergensis'
   | 'homo-neanderthalensis'
   | 'denisovans'
@@ -43,8 +47,11 @@ export type SpeciesId =
 
 export const SPECIES_IDS: readonly SpeciesId[] = [
   'pan-troglodytes',
+  'pan-paniscus',
   'sahelanthropus-tchadensis',
+  'orrorin-tugenensis',
   'ardipithecus-ramidus',
+  'australopithecus-anamensis',
   'australopithecus-afarensis',
   'australopithecus-africanus',
   'australopithecus-sediba',
@@ -52,6 +59,7 @@ export const SPECIES_IDS: readonly SpeciesId[] = [
   'paranthropus-robustus',
   'homo-habilis',
   'homo-erectus',
+  'homo-antecessor',
   'homo-heidelbergensis',
   'homo-neanderthalensis',
   'denisovans',

@@ -1,5 +1,5 @@
 /**
- * 12-language UI chrome localization, BCP-47 voice tags, RTL document direction,
+ * 13-language UI chrome localization, BCP-47 voice tags, RTL document direction,
  * and Google Cloud Chirp 3 HD (`Aoede`) voice metadata for Hominin Atlas.
  */
 import type { CladeGroup, DualText, LangCode } from '../data/types';
@@ -19,7 +19,8 @@ export const SUPPORTED_LANGUAGES: readonly LanguageOption[] = [
   { code: 'ar', label: 'AR · العربية', nativeName: 'العربية', dir: 'rtl', bcp47: 'ar-XA', chirpVoice: 'ar-XA-Chirp3-HD-Aoede' },
   { code: 'de', label: 'DE · Deutsch', nativeName: 'Deutsch', dir: 'ltr', bcp47: 'de-DE', chirpVoice: 'de-DE-Chirp3-HD-Aoede' },
   { code: 'nl', label: 'NL · Nederlands', nativeName: 'Nederlands', dir: 'ltr', bcp47: 'nl-NL', chirpVoice: 'nl-NL-Chirp3-HD-Aoede' },
-  { code: 'es', label: 'ES · Español', nativeName: 'Español', dir: 'ltr', bcp47: 'es-ES', chirpVoice: 'es-ES-Chirp3-HD-Aoede' },
+  { code: 'es', label: 'ES · Español (España)', nativeName: 'Español (España)', dir: 'ltr', bcp47: 'es-ES', chirpVoice: 'es-ES-Chirp3-HD-Aoede' },
+  { code: 'es-419', label: 'ES-LA · Español (LatAm)', nativeName: 'Español (Latinoamérica)', dir: 'ltr', bcp47: 'es-419', chirpVoice: 'es-US-Chirp3-HD-Aoede' },
   { code: 'fr', label: 'FR · Français', nativeName: 'Français', dir: 'ltr', bcp47: 'fr-FR', chirpVoice: 'fr-FR-Chirp3-HD-Aoede' },
   { code: 'it', label: 'IT · Italiano', nativeName: 'Italiano', dir: 'ltr', bcp47: 'it-IT', chirpVoice: 'it-IT-Chirp3-HD-Aoede' },
   { code: 'pt', label: 'PT · Português', nativeName: 'Português', dir: 'ltr', bcp47: 'pt-BR', chirpVoice: 'pt-BR-Chirp3-HD-Aoede' },
@@ -39,7 +40,8 @@ export function detectBrowserLang(): LangCode {
   if (raw.startsWith('ar')) return 'ar';
   if (raw.startsWith('de')) return 'de';
   if (raw.startsWith('nl')) return 'nl';
-  if (raw.startsWith('es')) return 'es';
+  if (raw === 'es' || raw === 'es-es') return 'es';
+  if (raw.startsWith('es-')) return 'es-419';
   if (raw.startsWith('fr')) return 'fr';
   if (raw.startsWith('it')) return 'it';
   if (raw.startsWith('pt')) return 'pt';
@@ -343,6 +345,57 @@ export const UI_TEXT: Record<LangCode, UIStrings> = {
       'early-homo': { kids: 'Primeros humanos', clinician: 'Homo temprano' },
       'archaic-homo': { kids: 'Humanos antiguos', clinician: 'Homo arcaico' },
       'island-homo': { kids: 'Humanos isleños', clinician: 'Homo insular' },
+      'modern-human': { kids: 'Humanos modernos (nosotros)', clinician: 'Humanos anatómicamente modernos' },
+    },
+  },
+  'es-419': {
+    atlasTitle: 'Atlas de Homínidos',
+    tagline: {
+      kids: 'Conoce a nuestros parientes antiguos a través de sus huesos',
+      clinician: 'Anatomía esquelética comparada y paleopatología de los homínidos',
+    },
+    audienceKids: 'Niños',
+    audienceClinician: 'Clínico',
+    languageLabel: 'Idioma',
+    readAloud: 'Escuchar narración',
+    stopReading: 'Detener audio',
+    quickFacts: { kids: 'Datos rápidos', clinician: 'Datos clave' },
+    specialTraits: { kids: 'Qué los hacía únicos', clinician: 'Rasgos diagnósticos' },
+    funFacts: 'Datos curiosos',
+    dailyLifeAttire: { kids: 'Vida diaria y aspecto', clinician: 'Comportamiento, ecología y pelaje/vestimenta' },
+    skinAttireLabel: { kids: 'Piel y aspecto', clinician: 'Piel e indumentaria' },
+    faceBustLabel: { kids: 'Rostro de cerca', clinician: 'Busto craneal' },
+    showOn3DSkeleton: 'Mostrar sobre esqueleto 3D',
+    hide3DSkinClothes: 'Ocultar piel en 3D',
+    fullView: 'Pantalla completa',
+    minimize: 'Minimizar',
+    showPhoto: 'Ver retrato',
+    portraitDisclaimer: 'Reconstrucción artística generada con IA; el tono exacto de piel, pelo y ojos es desconocido',
+    brain: { kids: 'Tamaño del cerebro', clinician: 'Volumen endocraneal' },
+    stature: { kids: 'Estatura', clinician: 'Estatura' },
+    mass: { kids: 'Peso', clinician: 'Masa corporal' },
+    range: { kids: 'Cuándo vivieron', clinician: 'Rango temporal' },
+    regions: { kids: 'Dónde vivieron', clinician: 'Distribución geográfica' },
+    locomotion: { kids: 'Cómo caminaban', clinician: 'Locomoción' },
+    diet: { kids: 'Qué comían', clinician: 'Dieta' },
+    technology: { kids: 'Herramientas', clinician: 'Tecnología lítica' },
+    allInjuries: { kids: 'Todas las lesiones', clinician: 'Todos los hallazgos' },
+    tabs: {
+      overview: { kids: 'Acerca de', clinician: 'Resumen' },
+      injuries: { kids: 'Lesiones', clinician: 'Patología' },
+      specimens: { kids: 'Fósiles', clinician: 'Especímenes' },
+      compare: { kids: 'Comparar', clinician: 'Comparar' },
+      tree: { kids: 'Árbol', clinician: 'Filogenia' },
+      glossary: { kids: 'Glosario', clinician: 'Glosario' },
+    },
+    groups: {
+      'living-relative': { kids: 'Primos vivos', clinician: 'Pariente vivo (grupo externo)' },
+      'early-hominin': { kids: 'Los más antiguos', clinician: 'Primeros homínidos' },
+      australopith: { kids: 'Simios del sur', clinician: 'Australopitecinos' },
+      paranthropus: { kids: 'Grandes masticadores', clinician: 'Australopitecinos robustos' },
+      'early-homo': { kids: 'Primeros humanos', clinician: 'Homo temprano' },
+      'archaic-homo': { kids: 'Humanos antiguos', clinician: 'Homo arcaico' },
+      'island-homo': { kids: 'Humanos de las islas', clinician: 'Homo insular' },
       'modern-human': { kids: 'Humanos modernos (nosotros)', clinician: 'Humanos anatómicamente modernos' },
     },
   },

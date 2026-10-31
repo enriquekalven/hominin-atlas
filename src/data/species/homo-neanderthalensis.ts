@@ -361,30 +361,63 @@ export const species: Species = {
     {
       id: 'feldhofer-1',
       catalog: 'Feldhofer 1 (Neanderthal 1)',
-      nickname: null,
+      nickname: 'Feldhofer Neanderthal',
       site: { name: 'Kleine Feldhofer Grotte, Neander Valley', country: 'Germany', lat: 51.23, lon: 6.95 },
       ageKa: {
-        best: null,
-        min: null,
-        max: null,
+        best: 40,
+        min: 39,
+        max: 41,
         method: 'Direct AMS radiocarbon dating of the bone (Schmitz et al. 2002): about 40,000 radiocarbon years BP, uncalibrated',
       },
       sex: 'male',
-      ageAtDeath: 'Adult',
+      ageAtDeath: 'Adult (~40–45 years)',
       discovery: { year: 1856, by: 'Quarry workers; recognised by Johann Carl Fuhlrott' },
       completeness: {
         percent: null,
-        found: ['humerus_L', 'humerus_R', 'ulna_L', 'ulna_R', 'radius_R', 'femur_L', 'femur_R'],
+        found: ['clavicle_R', 'scapula_R', 'humerus_L', 'humerus_R', 'ulna_L', 'ulna_R', 'radius_R', 'femur_L', 'femur_R'],
         partial: ['cranium', 'pelvis_L', 'ribs'],
       },
       story: {
-        kids: "In 1856, quarry workers in Germany's Neander Valley found old bones in a small cave. They became the first fossils to be named Neanderthal. Much later, scientists found the old cave dirt that had been thrown away. Inside it were more pieces of the very same skeleton.",
+        kids: "In 1856, quarry workers in Germany's Neander Valley found old bones in a small cave. They became the first fossils to be named Neanderthal! Because his left forearm had healed crookedly from an old break, one famous 19th-century doctor mistakenly thought the whole skeleton was just a sick modern person. Much later, scientists found the discarded cave dirt and refitted more pieces of the very same skeleton.",
         clinician:
-          'Holotype of Homo neanderthalensis King, 1864: a calotte and postcranial bones recovered by quarrymen in 1856, recognised by J. C. Fuhlrott and described by H. Schaaffhausen. The first Neanderthal mitochondrial DNA sequence came from this skeleton (Krings et al. 1997). Excavation of the relocated, discarded cave sediments in 1997 and 2000 produced fragments that refit Feldhofer 1, remains of at least one other individual (Feldhofer 2) and direct radiocarbon dates of about 40,000 radiocarbon years (Schmitz et al. 2002).',
+          'Holotype of Homo neanderthalensis King, 1864: a calotte and postcranial bones recovered by quarrymen in 1856, recognised by J. C. Fuhlrott and described by H. Schaaffhausen. Historically famous in paleopathology: Rudolf Virchow (1872) misattributed its archaic morphology to rickets and trauma after observing the genuinely healed left elbow injury. The first Neanderthal mtDNA sequence came from this skeleton (Krings et al. 1997), and re-excavation of discarded quarry sediments in 1997–2000 yielded refitting cranial/limb fragments and direct AMS 14C dates around 40 ka BP (Schmitz et al. 2002).',
       },
-      taphonomy: { colors: ['#9a7650', '#6c5036', '#33261a'], note: 'Brown bone stained by cave clay.' },
-      lesions: [],
-      citations: ['schmitz2002', 'krings1997'],
+      taphonomy: { colors: ['#9a7650', '#6c5036', '#33261a'], note: 'Brown cave loam bone with dendritic manganese staining.' },
+      lesions: [
+        {
+          id: 'feldhofer-1-left-ulna',
+          kind: 'healed-fracture',
+          bone: 'ulna_L',
+          site: { t: 0.18, azimuthDeg: 90 },
+          timing: 'antemortem',
+          healing: 'remodeled',
+          title: {
+            kids: 'Healed broken left elbow bone',
+            clinician: 'Healed fracture of the left proximal ulna / olecranon with secondary elbow osteoarthritis',
+          },
+          summary: {
+            kids: 'He broke his left forearm near the elbow years before he died. It healed with a bump and stiffened his elbow, making his left arm thinner than his muscular right arm.',
+            clinician:
+              'Well-remodelled antemortem fracture of the left coronoid/olecranon region of the proximal ulna with widening of the trochlear notch, osteophytic lipping of the elbow joint, and diaphyseal hypotrophy of the left humerus relative to the hypertrophied right humerus (Berger & Trinkaus 1995; Schmitz et al. 2002).',
+          },
+          clinical: {
+            morphology:
+              'Deformed, widened trochlear notch of the left ulna with healed callus remodelling, marginal osteophytes and eburnation/degenerative joint changes across the left humeroulnar articulation, accompanied by left humeral gracility.',
+            differential: [
+              'Healed traumatic intra-articular fracture/dislocation of the left proximal ulna (olecranon/coronoid)',
+              'Childhood/adolescent fall onto an outstretched or flexed left elbow',
+            ],
+            modernAnalogue: 'Malunited intra-articular olecranon fracture complicated by post-traumatic elbow osteoarthritis and restricted extension.',
+            functionalImpact: 'Limited full extension/supination of the left elbow and reduced left-arm loading, compensated by marked right-arm hypertrophy.',
+            survivalInterval: 'Many years (complete cortical remodelling and chronic unilateral disuse asymmetry).',
+          },
+          evidence: 'established',
+          debateNote: null,
+          citations: ['schmitz2002', 'berger1995b'],
+          render: { severity: 0.6, angulationDeg: 12 },
+        },
+      ],
+      citations: ['schmitz2002', 'krings1997', 'berger1995b'],
       isFlagship: false,
     },
 
@@ -561,6 +594,8 @@ export const species: Species = {
     'prufer2014',
     'slon2018',
     'trinkaus1983',
+    'schmitz2002',
+    'krings1997',
     'smithsonian-hop',
     'berger1995b',
     'beier2018',

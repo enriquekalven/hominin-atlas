@@ -7,6 +7,7 @@ import type { UICtx } from './context';
 import { button, h } from './dom';
 import { icon } from './icons';
 import { openDialog, type DialogHandle } from './dialogs';
+import { renderScanPresetsSection } from './scanPresets';
 
 const ACCEPT = '.stl,.glb,.obj,.ply';
 
@@ -28,7 +29,7 @@ export function mountScanLoader(ctx: UICtx, stage: HTMLElement, overlay: HTMLEle
     chip.hidden = false;
     chip.replaceChildren(
       icon('layers'),
-      h('span', { class: 'chip__label' }, 'Your scan: '),
+      h('span', { class: 'chip__label' }, '3D scan: '),
       h('strong', { class: 'chip__file' }, name),
       button('Clear scan', { class: 'chip__action' }, () => {
         ctx.events.emit('scan:clear', {});
@@ -38,6 +39,15 @@ export function mountScanLoader(ctx: UICtx, stage: HTMLElement, overlay: HTMLEle
       }),
     );
   };
+
+  ctx.events.on('scan:load', ({ name }) => {
+    showChip(name);
+    dialog?.close();
+    ctx.toast(`Showing 3D scan “${name}”.`, 'success');
+  });
+  ctx.events.on('scan:preset-error', ({ message }) => {
+    ctx.toast(message, 'error');
+  });
 
   const load = async (file: File) => {
     if (busy) return;
@@ -55,9 +65,6 @@ export function mountScanLoader(ctx: UICtx, stage: HTMLElement, overlay: HTMLEle
         return;
       }
       ctx.events.emit('scan:load', { name: result.safeName, format: result.format, buffer });
-      showChip(result.safeName);
-      dialog?.close();
-      ctx.toast(`Showing your scan “${result.safeName}”.`, 'success');
     } catch {
       ctx.toast('The file could not be read.', 'error');
     } finally {
@@ -98,7 +105,6 @@ export function mountScanLoader(ctx: UICtx, stage: HTMLElement, overlay: HTMLEle
     if (file) void load(file);
   });
 
-  // Never let a stray drop navigate the tab away to the file.
   window.addEventListener('dragover', (e) => {
     if (hasFiles(e)) e.preventDefault();
   });
@@ -108,11 +114,12 @@ export function mountScanLoader(ctx: UICtx, stage: HTMLElement, overlay: HTMLEle
 
   const open = () => {
     dialog = openDialog({
-      title: 'Load your own 3D scan',
-      description: 'Your file is opened only in this browser tab. It never leaves your device: nothing is uploaded or stored.',
+      title: 'Load a 3D museum or fossil scan',
+      className: 'dialog--wide',
+      description: 'Open a bundled CC0 Smithsonian specimen mesh, or drop your own .stl / .glb / .obj / .ply file (processed 100% locally in this tab).',
       build(body) {
-        const pick = button([icon('upload'), h('span', { class: 'btn__label' }, 'Choose a file…')], { class: 'btn btn--primary' }, () => input.click());
-        const zone = h('div', { class: 'dropzone' }, icon('layers'), h('p', null, 'Or drop a file here.'));
+        const pick = button([icon('upload'), h('span', { class: 'btn__label' }, 'Choose a local file…')], { class: 'btn btn--primary' }, () => input.click());
+        const zone = h('div', { class: 'dropzone' }, icon('layers'), h('p', null, 'Or drop a local .stl, .glb, .obj, or .ply file here (max 150 MB).'));
         zone.addEventListener('dragover', (e) => {
           if (!hasFiles(e)) return;
           e.preventDefault();
@@ -126,17 +133,7 @@ export function mountScanLoader(ctx: UICtx, stage: HTMLElement, overlay: HTMLEle
           const file = e.dataTransfer?.files[0];
           if (file) void load(file);
         });
-        body.append(
-          h(
-            'ul',
-            { class: 'bullets' },
-            h('li', null, 'Formats: STL, binary glTF (.glb), OBJ, PLY.'),
-            h('li', null, 'Maximum size: 150 MB.'),
-            h('li', null, 'The file is checked before it is shown. Unsupported or damaged files are rejected.'),
-          ),
-          zone,
-          h('div', { class: 'actions' }, pick),
-        );
+        body.append(zone, h('div', { class: 'actions' }, pick), renderScanPresetsSection(ctx));
       },
       onClose: () => {
         dialog = null;

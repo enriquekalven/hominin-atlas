@@ -51,9 +51,9 @@ export const species: Species = {
     'A tall male skeleton of this species is nicknamed Kadanuumuu, which means “big man” in the Afar language.',
   ],
   ancestry: {
-    parent: 'ardipithecus-ramidus',
-    uncertain: true,
-    note: 'Most likely descended from Australopithecus anamensis (~4.2–3.8 Ma, not included here), which overlapped in time with early A. afarensis. A direct link to Ardipithecus is uncertain.',
+    parent: 'australopithecus-anamensis',
+    uncertain: false,
+    note: 'Widely regarded as descending from Australopithecus anamensis (~4.2–3.8 Ma; Kimbel et al. 2009), though the 3.80 Ma MRD-VP-1/1 cranium demonstrates ~100 kyr of temporal overlap via branching cladogenesis rather than pure anagenesis (Haile-Selassie et al. 2019).',
   },
   geneFlow: [],
   specimens: [

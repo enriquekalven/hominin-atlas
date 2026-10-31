@@ -3,7 +3,8 @@
  * morph (store.compareMode, store.morphT) and read a null-safe metrics table with differences.
  */
 import type { CompareMode } from '../../app/store';
-import type { Audience, Range, Species, SpeciesId } from '../../data/types';
+import { PALEOECOLOGY } from '../../data';
+import type { Audience, Species, SpeciesId } from '../../data/types';
 import type { UICtx } from '../context';
 import { currentSpecies } from '../context';
 import { button, h, uid, type Scope } from '../dom';
@@ -20,6 +21,8 @@ function metricsTable(a: Species, b: Species | undefined, audience: Audience): H
     [pick(STAT_LABEL.stature, audience), (sp) => formatMeasure(sp.statureCm, 'cm'), (x, y) => metricDiff(x.statureCm, y.statureCm, 'cm')],
     [pick(STAT_LABEL.mass, audience), (sp) => formatMeasure(sp.massKg, 'kg'), (x, y) => metricDiff(x.massKg, y.massKg, 'kg')],
     [pick(STAT_LABEL.range, audience), (sp) => formatKaRange(sp.rangeKa.start, sp.rangeKa.end), null],
+    [audience === 'kids' ? 'Diet chemistry' : 'Isotopic diet (δ¹³C)', (sp) => pick(PALEOECOLOGY[sp.id].dietIsotope, audience), null],
+    [audience === 'kids' ? 'Tool stage' : 'Lithic mode', (sp) => pick(PALEOECOLOGY[sp.id].lithicMode, audience), null],
   ];
   return h(
     'table',

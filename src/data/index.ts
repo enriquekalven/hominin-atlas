@@ -1,6 +1,6 @@
 /**
  * Read-only data access helpers. The records themselves live in ./species/*, ./citations.ts,
- * ./glossary.ts and ./quiz.ts (owned by the data curator).
+ * ./glossary.ts, ./quiz.ts, ./ecology.ts, and ./phylogeny.ts (owned by the data curator).
  */
 import type { Citation, Lesion, Species, SpeciesId, Specimen } from './types';
 import { SPECIES_LIST } from './species';
@@ -8,8 +8,16 @@ import { CITATIONS } from './citations';
 
 export { GLOSSARY } from './glossary';
 export { QUIZ } from './quiz';
+export { PALEOECOLOGY, type PaleoecologyEntry } from './ecology';
+export {
+  PHYLOGENY_HYPOTHESES,
+  applyPhylogenyHypothesis,
+  getPhylogenyHypothesis,
+  type PhylogenyHypothesis,
+  type PhylogenyHypothesisId,
+} from './phylogeny';
 
-/** All taxa: the living outgroup first, then hominins by oldest first appearance. */
+/** All taxa: the living outgroups first, then hominins by oldest first appearance. */
 export const SPECIES: readonly Species[] = [...SPECIES_LIST].sort((a, b) => {
   const pa = a.group === 'living-relative' ? 0 : 1;
   const pb = b.group === 'living-relative' ? 0 : 1;
@@ -59,9 +67,4 @@ export function citationHref(c: Citation): string | null {
   if (c.doi && /^10\.\d{4,9}\/\S+$/.test(c.doi)) return `https://doi.org/${encodeURI(c.doi)}`;
   if (c.url && /^https:\/\/[^\s]+$/.test(c.url)) return c.url;
   return null;
-}
-
-/** Species alive at a given time (ka). */
-export function speciesAlive(ka: number): Species[] {
-  return SPECIES.filter((s) => s.rangeKa.start >= ka && s.rangeKa.end <= ka);
 }

@@ -179,6 +179,27 @@ export const PRESETS: Record<SpeciesId, MorphParams> = {
       glenoidTilt: 25, clavicleLength: 0.12, posture: 'knuckle',
     }),
   },
+  'pan-paniscus': {
+    skull: skull({
+      vaultLength: 0.129, vaultBreadth: 0.097, vaultHeight: 0.073, vaultThickness: 0.0046, porionFraction: 0.56,
+      frontalSlope: 0.88, frontalBreadth: 0.61, parietalBossing: 0.08, maxBreadthHeight: 0.16, occipitalBun: 0,
+      occipitalAngulation: 0.5, sagittalCrest: 0, nuchalTorus: 0.004, mastoidSize: 0.28, foramenMagnumZ: -0.019,
+      browRidge: 0.0065, browContinuous: 0.9, browProjection: 0.009, faceHeight: 0.076, faceWidth: 0.112,
+      prognathism: 0.042, orbitWidth: 0.035, orbitHeight: 0.035, orbitShape: 0.65, nasalWidth: 0.019,
+      nasalHeight: 0.03, zygomaticFlare: 0.18, cheekHeight: 0.019, arcadeWidth: 0.056, arcadeFront: 0.049,
+      arcadeSquareness: 0.92, incisorSize: 0.0108, canineSize: 0.011, canineHeight: 0.016, premolarSize: 0.008,
+      molarSize: 0.0098, diastema: 0.005, chin: 0, mandibleHeight: 0.036, mandibleThickness: 0.014,
+      ramusWidth: 0.038, gonialFlare: 0.35,
+    }),
+    body: body({
+      stature: 1.16, vertebrae: { cervical: 7, thoracic: 13, lumbar: 4 }, humerus: 0.275, radius: 0.255, femur: 0.295,
+      tibia: 0.245, handLength: 0.225, footLength: 0.23, shoulderWidth: 0.275, pelvisWidth: 0.245, hipJointWidth: 0.115,
+      chestWidth: 0.23, chestDepth: 0.17, thoraxFunnel: 0.95, robusticity: 0.98, cortical: 0.38, iliacFlare: 0.12,
+      iliacHeight: 0.165, iliacOrientation: 0.05, femoralNeck: 0.031, femoralHead: 0.0175, bicondylar: 2, femurBow: 0.004,
+      lordosis: 0.05, kyphosis: 1.05, halluxAbduction: 38, footArch: 0, fingerCurvature: 0.78, thumbLength: 0.56,
+      glenoidTilt: 24, clavicleLength: 0.115, posture: 'knuckle',
+    }),
+  },
   'sahelanthropus-tchadensis': {
     skull: skull({
       vaultLength: 0.137, vaultBreadth: 0.098, vaultHeight: 0.072, vaultThickness: 0.006, porionFraction: 0.57,
@@ -198,6 +219,25 @@ export const PRESETS: Record<SpeciesId, MorphParams> = {
       glenoidTilt: 18, clavicleLength: 0.11,
     }),
   },
+  'orrorin-tugenensis': {
+    skull: skull({
+      vaultLength: 0.135, vaultBreadth: 0.097, vaultHeight: 0.073, vaultThickness: 0.0055, porionFraction: 0.56,
+      frontalSlope: 0.88, frontalBreadth: 0.61, parietalBossing: 0, maxBreadthHeight: 0.1, occipitalAngulation: 0.6,
+      sagittalCrest: 0.0015, nuchalTorus: 0.006, mastoidSize: 0.4, foramenMagnumZ: -0.005, browRidge: 0.008,
+      browContinuous: 0.92, browProjection: 0.011, faceHeight: 0.072, faceWidth: 0.118, prognathism: 0.024,
+      orbitWidth: 0.035, orbitHeight: 0.033, orbitShape: 0.68, nasalWidth: 0.02, nasalHeight: 0.036,
+      zygomaticFlare: 0.22, cheekHeight: 0.022, arcadeWidth: 0.054, arcadeFront: 0.042, arcadeSquareness: 0.88,
+      incisorSize: 0.0092, canineSize: 0.0098, canineHeight: 0.0115, premolarSize: 0.008, molarSize: 0.0108,
+      diastema: 0.0018, chin: 0, mandibleHeight: 0.033, mandibleThickness: 0.017, ramusWidth: 0.038,
+    }),
+    body: body({
+      ...AUSTRALOPITH_BODY, stature: 1.22, humerus: 0.268, radius: 0.235, femur: 0.308, tibia: 0.258, handLength: 0.175,
+      footLength: 0.195, shoulderWidth: 0.28, pelvisWidth: 0.245, hipJointWidth: 0.128, chestWidth: 0.22, chestDepth: 0.16,
+      thoraxFunnel: 0.9, iliacFlare: 0.72, iliacHeight: 0.11, iliacOrientation: 0.62, femoralNeck: 0.044,
+      femoralHead: 0.0165, bicondylar: 10, lordosis: 0.7, halluxAbduction: 18, footArch: 0.25, fingerCurvature: 0.62,
+      glenoidTilt: 16, clavicleLength: 0.11,
+    }),
+  },
   'ardipithecus-ramidus': {
     skull: skull({
       vaultLength: 0.13, vaultBreadth: 0.095, vaultHeight: 0.074, vaultThickness: 0.0045, porionFraction: 0.56,
@@ -215,6 +255,25 @@ export const PRESETS: Record<SpeciesId, MorphParams> = {
       thoraxFunnel: 0.9, iliacFlare: 0.7, iliacHeight: 0.11, iliacOrientation: 0.6, femoralNeck: 0.04,
       femoralHead: 0.016, bicondylar: 8, lordosis: 0.6, halluxAbduction: 30, footArch: 0.1, fingerCurvature: 0.6,
       glenoidTilt: 15, clavicleLength: 0.11,
+    }),
+  },
+  'australopithecus-anamensis': {
+    skull: skull({
+      vaultLength: 0.141, vaultBreadth: 0.101, vaultHeight: 0.077, vaultThickness: 0.005, porionFraction: 0.56,
+      frontalSlope: 0.88, frontalBreadth: 0.58, parietalBossing: 0, maxBreadthHeight: 0.1, occipitalAngulation: 0.65,
+      sagittalKeel: 0.2, sagittalCrest: 0.0035, nuchalTorus: 0.005, mastoidSize: 0.55, foramenMagnumZ: -0.004,
+      browRidge: 0.0065, browContinuous: 0.78, browProjection: 0.009, faceHeight: 0.081, faceWidth: 0.126,
+      midfaceProjection: 0.005, prognathism: 0.034, orbitWidth: 0.036, orbitHeight: 0.034, nasalWidth: 0.023,
+      nasalHeight: 0.04, zygomaticFlare: 0.44, zygomaticRetreat: 0.15, cheekHeight: 0.027, dishedFace: 0.22,
+      arcadeWidth: 0.056, arcadeFront: 0.043, arcadeSquareness: 0.86, incisorSize: 0.0105, canineSize: 0.011,
+      canineHeight: 0.0135, premolarSize: 0.0095, molarSize: 0.0128, diastema: 0.003, chin: 0, mandibleHeight: 0.036,
+      mandibleThickness: 0.021, ramusWidth: 0.041, gonialFlare: 0.4,
+    }),
+    body: body({
+      ...AUSTRALOPITH_BODY, stature: 1.24, humerus: 0.262, radius: 0.215, femur: 0.305, tibia: 0.262, handLength: 0.15,
+      footLength: 0.185, shoulderWidth: 0.275, pelvisWidth: 0.255, hipJointWidth: 0.13, chestWidth: 0.22,
+      chestDepth: 0.155, iliacHeight: 0.09, femoralNeck: 0.043, femoralHead: 0.0155, bicondylar: 14,
+      clavicleLength: 0.105, halluxAbduction: 4,
     }),
   },
   'australopithecus-afarensis': {
@@ -348,6 +407,26 @@ export const PRESETS: Record<SpeciesId, MorphParams> = {
       robusticity: 1.15, cortical: 0.5, iliacFlare: 0.5, iliacHeight: 0.125, iliacOrientation: 0.9,
       femoralNeck: 0.06, femoralHead: 0.023, bicondylar: 9, lordosis: 0.9, footArch: 0.9, thumbLength: 0.95,
       glenoidTilt: 2, clavicleLength: 0.145,
+    }),
+  },
+  'homo-antecessor': {
+    skull: skull({
+      vaultLength: 0.198, vaultBreadth: 0.143, vaultHeight: 0.104, vaultThickness: 0.0082, porionFraction: 0.495,
+      frontalSlope: 0.62, frontalBreadth: 0.68, parietalBossing: 0.28, maxBreadthHeight: 0.42, occipitalBun: 0.15,
+      occipitalAngulation: 0.45, sagittalKeel: 0.2, nuchalTorus: 0.004, mastoidSize: 0.95, foramenMagnumZ: 0.003,
+      browRidge: 0.0095, browContinuous: 0.45, browProjection: 0.012, faceHeight: 0.078, faceWidth: 0.138,
+      midfaceProjection: 0.003, prognathism: 0.009, orbitWidth: 0.043, orbitHeight: 0.036, orbitShape: 0.55,
+      nasalWidth: 0.03, nasalHeight: 0.055, zygomaticFlare: 0.18, zygomaticRetreat: 0.15, cheekHeight: 0.024,
+      dishedFace: 0, arcadeWidth: 0.066, arcadeFront: 0.039, arcadeSquareness: 0.28, incisorSize: 0.0092,
+      canineSize: 0.0086, canineHeight: 0.0105, premolarSize: 0.0076, molarSize: 0.0114, chin: 0.08,
+      mandibleHeight: 0.034, mandibleThickness: 0.0155, ramusWidth: 0.037, gonialFlare: 0.35, retromolarSpace: 0.002,
+    }),
+    body: body({
+      stature: 1.72, humerus: 0.325, radius: 0.248, femur: 0.47, tibia: 0.385, handLength: 0.19, footLength: 0.265,
+      shoulderWidth: 0.4, pelvisWidth: 0.295, hipJointWidth: 0.178, chestWidth: 0.305, chestDepth: 0.215,
+      thoraxFunnel: 0.02, robusticity: 1.2, cortical: 0.46, iliacFlare: 0.52, iliacHeight: 0.128,
+      iliacOrientation: 0.92, femoralNeck: 0.058, femoralHead: 0.0245, femurBow: 0.007, lordosis: 0.88, footArch: 0.92,
+      clavicleLength: 0.152,
     }),
   },
   'homo-heidelbergensis': {

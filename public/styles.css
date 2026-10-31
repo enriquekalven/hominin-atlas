@@ -2884,3 +2884,124 @@ html[dir="rtl"] .differential {
     outline: 2px solid Highlight;
   }
 }
+
+/* ---------- 14. Forensic taphonomy comparator, phylogeny switcher & museum scans ---------- */
+.taphonomy-guide {
+  margin-top: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--panel-2);
+}
+.taphonomy-guide__summary {
+  padding: var(--s-2) var(--s-3);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.taphonomy-guide__inner {
+  display: grid;
+  gap: var(--s-2);
+  padding: 0 var(--s-3) var(--s-3);
+}
+.taphonomy-guide__card {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-2);
+}
+.taphonomy-guide__badge {
+  margin: 0;
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.taphonomy-guide__body {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+.phylo-bar {
+  display: grid;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--panel-2);
+}
+.phylo-bar .seg {
+  display: flex;
+  flex-wrap: wrap;
+}
+.phylo-bar__summary {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+}
+
+.scan-presets {
+  display: grid;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.scan-presets__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--s-2);
+}
+.scan-preset {
+  display: grid;
+  gap: 2px;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-2);
+  background: var(--panel-2);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.scan-preset:hover {
+  border-color: var(--accent);
+}
+.scan-preset__title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.scan-preset__meta {
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+}
+.scan-repos {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.scan-repo {
+  padding: var(--s-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-2);
+  font-size: var(--fs-xs);
+}
+.scan-repo__link {
+  color: var(--accent);
+  font-weight: 600;
+}
+.scan-repo__inst {
+  color: var(--text-2);
+}
+.scan-repo__note {
+  margin: 2px 0 0;
+}
